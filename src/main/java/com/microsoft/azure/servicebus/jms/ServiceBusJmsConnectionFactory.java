@@ -24,10 +24,22 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
     private final JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
     
+    /**
+     * Create a ServiceBusJmsConnectionFactory using a given Azure ServiceBus connection string.
+     * @param connectionString The ServiceBus connection string. For details on how to get your connection string, 
+     *                         please see <a href="https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-create-namespace-portal#get-the-connection-string">
+     *                         https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-create-namespace-portal#get-the-connection-string</a>.
+     * @param settings The options used for this ConnectionFactory. Null can be used as default.
+     */
     public ServiceBusJmsConnectionFactory(String connectionString, ServiceBusJmsConnectionFactorySettings settings) {
         this(new ConnectionStringBuilder(connectionString), settings);
     }
     
+    /**
+     * Create a ServiceBusJmsConnectionFactory using a given Azure ServiceBus ConnectionStringBuilder.
+     * @param connectionStringBuilder The ConnectionStringBuilder constructed using the SerivceBus connection string
+     * @param settings The options used for this ConnectionFactory. Null can be used as default.
+     */
     public ServiceBusJmsConnectionFactory(ConnectionStringBuilder connectionStringBuilder, ServiceBusJmsConnectionFactorySettings settings) {
         this(connectionStringBuilder.getSasKeyName(),
                 connectionStringBuilder.getSasKey(),
@@ -36,6 +48,13 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         this.builder = connectionStringBuilder;
     }
     
+    /**
+     * Create a ServiceBusJmsConnectionFactory using shared access key and host name.
+     * @param sasKeyName The Shared access policy name.
+     * @param sasKey The Shared access policy key.
+     * @param host The host name of the ServiceBus namespace. Example: your-namespace-name.servicebus.windows.net
+     * @param settings The options used for this ConnectionFactory. Null can be used as default.
+     */
     public ServiceBusJmsConnectionFactory(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
         if (sasKeyName == null || sasKeyName == null || host == null) {
             throw new IllegalArgumentException("SAS Key, SAS KeyName and the host cannot be null for a ServiceBus connection factory.");
@@ -54,10 +73,17 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         return factory;
     }
     
+    /**
+     * @return The clientId set for this ConnectionFactory.
+     */
     public ConnectionStringBuilder getConnectionStringBuilder() {
         return builder;
     }
     
+    /**
+     * @param clientId Set the clientId for this ConnectionFactory. 
+     *                 Connections created with this ConnectionFactory will have this value as its clientId.
+     */
     public String getClientId() {
         return this.factory.getClientID();
     }
