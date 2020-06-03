@@ -58,6 +58,14 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         return builder;
     }
     
+    public String getClientId() {
+        return this.factory.getClientID();
+    }
+    
+    public void setClientId(String clientId) {
+        this.factory.setClientID(clientId);
+    }
+
     @Override
     public Connection createConnection() throws JMSException {
         return this.factory.createConnection();
