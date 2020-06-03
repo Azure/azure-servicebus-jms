@@ -54,6 +54,14 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory {
         return builder;
     }
     
+    public String getClientId() {
+        return this.factory.getClientID();
+    }
+    
+    public void setClientId(String clientId) {
+        this.factory.setClientID(clientId);
+    }
+    
     public Connection createConnection() throws JMSException {
         return this.factory.createConnection();
     }
