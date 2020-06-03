@@ -73,21 +73,21 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         return factory;
     }
     
+    public ConnectionStringBuilder getConnectionStringBuilder() {
+        return builder;
+    }
+    
     /**
      * @return The clientId set for this ConnectionFactory.
      */
-    public ConnectionStringBuilder getConnectionStringBuilder() {
-        return builder;
+    public String getClientId() {
+        return this.factory.getClientID();
     }
     
     /**
      * @param clientId Set the clientId for this ConnectionFactory. 
      *                 Connections created with this ConnectionFactory will have this value as its clientId.
      */
-    public String getClientId() {
-        return this.factory.getClientID();
-    }
-    
     public void setClientId(String clientId) {
         this.factory.setClientID(clientId);
     }
