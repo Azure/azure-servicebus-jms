@@ -21,9 +21,10 @@ import org.apache.qpid.jms.JmsConnectionFactory;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
 public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueConnectionFactory, TopicConnectionFactory {
+    private static final int MaxCustomUserAgentLength = 128;
     private final JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
-    private String userAgent;
+    private String customUserAgent;
     
     /**
      * Create a ServiceBusJmsConnectionFactory using a given Azure ServiceBus connection string.
@@ -67,9 +68,11 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
             Map<String, Object> properties = new HashMap<>();
             properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
             
-            if (userAgent != null) {
-                properties.put("userAgent", userAgent);
+            StringBuilder userAgent = new StringBuilder("ServiceBusJms");
+            if (customUserAgent != null && customUserAgent.length() > 0) {
+                userAgent.append("/").append(customUserAgent);
             }
+            properties.put("userAgent", userAgent.toString());
 
             return properties;
         });
@@ -98,12 +101,16 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         this.factory.setClientID(clientId);
     }
 
-    protected String getUserAgent() {
-        return userAgent;
+    protected String getCustomUserAgent() {
+        return customUserAgent;
     }
     
-    protected void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
+    protected void setCustomUserAgent(String customUserAgent) {
+        if (customUserAgent != null && customUserAgent.length() > MaxCustomUserAgentLength) {
+            throw new IllegalArgumentException("The length of the custom userAgent cannot exceed " + MaxCustomUserAgentLength);
+        }
+        
+        this.customUserAgent = customUserAgent;
     }
     
     @Override
