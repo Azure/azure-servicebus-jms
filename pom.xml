@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.microsoft.azure</groupId>
 	<artifactId>azure-servicebus-jms</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>azure-servicebus-jms</name>
 	<description>ServiceBus ConnectionFactory for JMS users</description>
 
