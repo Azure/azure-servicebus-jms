@@ -72,6 +72,7 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
             if (customUserAgent != null && customUserAgent.length() > 0) {
                 userAgent.append("/").append(customUserAgent);
             }
+            
             properties.put("user-agent", userAgent.toString());
 
             return properties;
