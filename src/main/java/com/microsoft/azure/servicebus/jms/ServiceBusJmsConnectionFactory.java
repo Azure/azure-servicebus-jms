@@ -62,8 +62,17 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
             throw new IllegalArgumentException("SAS Key, SAS KeyName and the host cannot be null for a ServiceBus connection factory.");
         }
         
-        String query = (settings == null) ? "" : settings.toQuery();
-        this.factory = new JmsConnectionFactory(sasKeyName, sasKey, "amqps://" + host + query);
+        if (settings == null) {
+            settings = new ServiceBusJmsConnectionFactorySettings();
+        }
+        
+        String serviceBusQuery = settings.getServiceBusQuery();
+        String destinationUri = "amqps://" + host + serviceBusQuery;
+        if (settings.shouldUseFailover()) {
+            destinationUri = getFailoverUri(destinationUri, settings);
+        }
+        
+        this.factory = new JmsConnectionFactory(sasKeyName, sasKey, destinationUri);
         this.factory.setExtension(JmsConnectionExtensions.AMQP_OPEN_PROPERTIES.toString(), (connection, uri) -> {
             Map<String, Object> properties = new HashMap<>();
             properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
@@ -162,5 +171,28 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
     @Override
     public QueueConnection createQueueConnection(String userName, String password) throws JMSException {
         return this.factory.createQueueConnection(userName, password);
+    }
+    
+    // Obtain the failover URI in the form that QPID could understand.
+    // Example: failover:(amqps://contoso.servicebus.windows.net?amqp.idleTimeout=30000,amqps://contoso2.servicebus.windows.net?amqp.idleTimeout=30000)?failover.maxReconnectAttempts=20
+    private String getFailoverUri(String originalHost, ServiceBusJmsConnectionFactorySettings settings) {
+        StringBuilder builder = new StringBuilder("failover:(");
+        builder.append(originalHost);
+        
+        String[] failoverHosts = settings.getFailoverHosts();
+        if (settings.getFailoverHosts() != null) {
+            String serviceBusQuery = settings.getServiceBusQuery();
+            
+            for (String failoverHost: failoverHosts) {
+                builder.append(",");
+                builder.append("amqps://");
+                builder.append(failoverHost);
+                builder.append(serviceBusQuery);
+            }
+        }
+        
+        builder.append(")");
+        builder.append(settings.getFailoverQuery());
+        return builder.toString();
     }
 }
