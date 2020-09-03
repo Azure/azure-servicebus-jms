@@ -3,8 +3,10 @@
 
 package com.microsoft.azure.servicebus.jms;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -68,7 +70,17 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
             Map<String, Object> properties = new HashMap<>();
             properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
             
+            String servicebusJmsVersion = "";
+            Properties applicationProperties = new Properties();
+            try {
+                applicationProperties.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
+                servicebusJmsVersion = applicationProperties.getProperty("azure.servicebus.jms.version");
+            } catch (IOException e) {
+                servicebusJmsVersion = "unknown";
+            }
+            
             StringBuilder userAgent = new StringBuilder("ServiceBusJms");
+            userAgent.append("-").append(servicebusJmsVersion);
             if (customUserAgent != null && customUserAgent.length() > 0) {
                 userAgent.append("/").append(customUserAgent);
             }
