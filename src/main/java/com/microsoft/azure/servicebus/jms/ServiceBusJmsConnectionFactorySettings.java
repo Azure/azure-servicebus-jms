@@ -11,20 +11,25 @@ public class ServiceBusJmsConnectionFactorySettings {
     private long connectionIdleTimeoutMS;
     private boolean traceFrames;
     
-    // QPID failover options
-    private boolean shouldUseFailover = true;
-    private String[] failoverHosts;
-    private Long failoverInitialReconnectDelay;
-    private Long failoverReconnectDelay;
-    private Long failoverMaxReconnectDelay;
-    private Boolean failoverUseReconnectBackOff;
-    private Double failoverReconnectBackOffMultiplier;
-    private Integer failoverMaxReconnectAttempts;
-    private Integer failoverStartupMaxReconnectAttempts;
-    private Integer failoverWarnAfterReconnectAttempts;
-    private Boolean failoverRandomize;
-    private AmqpOpenServerListAction failoverAmqpOpenServerListAction;
+    // QPID reconnect options
+    private boolean shouldReconnect = true;
+    private String[] reconnectHosts;
+    private Long initialReconnectDelay;
+    private Long reconnectDelay;
+    private Long maxReconnectDelay;
+    private Boolean useReconnectBackOff;
+    private Double reconnectBackOffMultiplier;
+    private Integer maxReconnectAttempts;
+    private Integer startupMaxReconnectAttempts;
+    private Integer warnAfterReconnectAttempts;
+    private Boolean reconnectRandomize;
+    private AmqpOpenServerListAction reconnectAmqpOpenServerListAction;
     
+    /**
+    * <li>If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
+    * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
+    * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
+    */
     public enum AmqpOpenServerListAction { REPLACE, ADD, IGNORE };
     
     public ServiceBusJmsConnectionFactorySettings() { }
@@ -51,40 +56,40 @@ public class ServiceBusJmsConnectionFactorySettings {
     }
     
     /**
-     * @return True if the failover functionalities implement by QPID should be leveraged. Default is true.
+     * @return True if the reconnect functionalities implement by QPID should be leveraged. Default is true.
      */
-    public boolean shouldUseFailover() {
-        return shouldUseFailover;
+    public boolean shouldReconnect() {
+        return shouldReconnect;
     }
 
     /**
-     * @param shouldUseFailover True if the failover functionalities implement by QPID should be leveraged. Default is true.
+     * @param shouldUseReconnect True if the reconnect functionalities implement by QPID should be leveraged. Default is true.
      */
-    public void setShouldUseFailover(boolean shouldUseFailover) {
-        this.shouldUseFailover = shouldUseFailover;
+    public void setShouldReconnect(boolean shouldReconnect) {
+        this.shouldReconnect = shouldReconnect;
     }
     
     /**
-     * @return The array of ServiceBus hosts that the client should failover to in case of a connection failure.
+     * @return The array of ServiceBus hosts that the client should reconnect to in case of a connection failure.
      */
-    public String[] getFailoverHosts() {
-        return failoverHosts;
+    public String[] getReconnectHosts() {
+        return reconnectHosts;
     }
 
     /**
-     * @param failoverHosts The array of ServiceBus hosts that the client should failover to in case of a connection failure.
+     * @param reconnectHosts The array of ServiceBus hosts that the client should reconnect to in case of a connection failure.
      *                      An example value is contoso.servicebus.windows.net.
      *                          
      */
-    public void setFailoverHosts(String[] failoverHosts) {
-        this.failoverHosts = failoverHosts;
+    public void setReconnectHosts(String[] reconnectHosts) {
+        this.reconnectHosts = reconnectHosts;
     }
     
     /**
      * @param connectionStrings The array of ServiceBus ConnectionStrings that will be parsed to obtain the hosts that 
-     *                          the client should failover to in case of a connection failure.
+     *                          the client should reconnect to in case of a connection failure.
      */
-    public void setFailoverHostsByConnectionString(String[] connectionStrings) {
+    public void setReconnectHostsByConnectionString(String[] connectionStrings) {
         if (connectionStrings != null) {
             String[] hosts = new String[connectionStrings.length];
             
@@ -93,30 +98,30 @@ public class ServiceBusJmsConnectionFactorySettings {
                 hosts[i] = builder.getEndpoint().getHost();
             }
             
-            this.failoverHosts = hosts;
+            this.reconnectHosts = hosts;
         }
     }
     
     /**
      * @return The amount of time the client will wait before the first attempt to reconnect to a remote peer in milliseconds. 
      */
-    public Long getFailoverInitialReconnectDelay() {
-        return failoverInitialReconnectDelay;
+    public Long getInitialReconnectDelay() {
+        return initialReconnectDelay;
     }
 
     /**
      * @param initialReconnectDelay The amount of time the client will wait before the first attempt to reconnect to a remote peer in milliseconds. 
      *                              The default value is zero, meaning the first attempt happens immediately.
      */
-    public void setFailoverInitialReconnectDelay(long initialReconnectDelay) {
-        this.failoverInitialReconnectDelay = initialReconnectDelay;
+    public void setInitialReconnectDelay(long initialReconnectDelay) {
+        this.initialReconnectDelay = initialReconnectDelay;
     }
 
     /**
      * @return The delay between successive reconnection attempts in milliseconds.
      */
-    public Long getFailoverReconnectDelay() {
-        return failoverReconnectDelay;
+    public Long getReconnectDelay() {
+        return reconnectDelay;
     }
 
     /**
@@ -124,130 +129,130 @@ public class ServiceBusJmsConnectionFactorySettings {
      * @param reconnectDelay The delay between successive reconnection attempts in milliseconds, defaults to 10.
      *                       If the backoff option is not enabled this value remains constant.
      */
-    public void setFailoverReconnectDelay(long reconnectDelay) {
-        this.failoverReconnectDelay = reconnectDelay;
+    public void setReconnectDelay(long reconnectDelay) {
+        this.reconnectDelay = reconnectDelay;
     }
 
     /**
      * @return The maximum time that the client will wait before attempting a reconnect in milliseconds.
      */
-    public Long getFailoverMaxReconnectDelay() {
-        return failoverMaxReconnectDelay;
+    public Long getMaxReconnectDelay() {
+        return maxReconnectDelay;
     }
 
     /**
      * @param maxReconnectDelay The maximum time that the client will wait before attempting a reconnect in milliseconds, defaults to 30000.
      */
-    public void setFailoverMaxReconnectDelay(long maxReconnectDelay) {
-        this.failoverMaxReconnectDelay = maxReconnectDelay;
+    public void setMaxReconnectDelay(long maxReconnectDelay) {
+        this.maxReconnectDelay = maxReconnectDelay;
     }
 
     /**
      * @return True if the time between reconnection attempts should grow based on a configured multiplier.
      */
-    public Boolean shouldFailoverUseReconnectBackOff() {
-        return failoverUseReconnectBackOff;
+    public Boolean useReconnectBackOff() {
+        return useReconnectBackOff;
     }
 
     /**
      * @param useReconnectBackOff True if the time between reconnection attempts should grow based on a configured multiplier. This option defaults to true.
      */
-    public void setFailoverUseReconnectBackOff(boolean useReconnectBackOff) {
-        this.failoverUseReconnectBackOff = useReconnectBackOff;
+    public void setUseReconnectBackOff(boolean useReconnectBackOff) {
+        this.useReconnectBackOff = useReconnectBackOff;
     }
 
     /**
      * @return The multiplier used to grow the reconnection delay value.
      */
-    public Double getFailoverReconnectBackOffMultiplier() {
-        return failoverReconnectBackOffMultiplier;
+    public Double getReconnectBackOffMultiplier() {
+        return reconnectBackOffMultiplier;
     }
 
     /**
      * @param reconnectBackOffMultiplier The multiplier used to grow the reconnection delay value, defaults to 2.0.
      */
-    public void setFailoverReconnectBackOffMultiplier(double reconnectBackOffMultiplier) {
-        this.failoverReconnectBackOffMultiplier = reconnectBackOffMultiplier;
+    public void setReconnectBackOffMultiplier(double reconnectBackOffMultiplier) {
+        this.reconnectBackOffMultiplier = reconnectBackOffMultiplier;
     }
 
     /**
      * @return The number of reconnection attempts allowed before reporting the connection as failed to the client.
      */
-    public Integer getFailoverMaxReconnectAttempts() {
-        return failoverMaxReconnectAttempts;
+    public Integer getReconnectMaxReconnectAttempts() {
+        return maxReconnectAttempts;
     }
 
     /**
      * @param maxReconnectAttempts The number of reconnection attempts allowed before reporting the connection as failed to the client. The default is no limit or (-1).
      */
-    public void setFailoverMaxReconnectAttempts(int maxReconnectAttempts) {
-        this.failoverMaxReconnectAttempts = maxReconnectAttempts;
+    public void setReconnectMaxReconnectAttempts(int maxReconnectAttempts) {
+        this.maxReconnectAttempts = maxReconnectAttempts;
     }
 
     /**
      * @return For a client that has never connected to a remote peer before this option control how many attempts are made to connect before reporting the connection as failed.
      */
-    public Integer getFailoverStartupMaxReconnectAttempts() {
-        return failoverStartupMaxReconnectAttempts;
+    public Integer getReconnectStartupMaxReconnectAttempts() {
+        return startupMaxReconnectAttempts;
     }
 
     /**
      * @param startupMaxReconnectAttempts For a client that has never connected to a remote peer before this option control how many attempts are made to connect before reporting the connection as failed. 
      *                                    The default is to use the value of maxReconnectAttempts.
      */
-    public void setFailoverStartupMaxReconnectAttempts(int startupMaxReconnectAttempts) {
-        this.failoverStartupMaxReconnectAttempts = startupMaxReconnectAttempts;
+    public void setReconnectStartupMaxReconnectAttempts(int startupMaxReconnectAttempts) {
+        this.startupMaxReconnectAttempts = startupMaxReconnectAttempts;
     }
 
     /**
-     * @return Number of reconnection attempts before the client will log a message indicating that failover reconnection is being attempted.
+     * @return Number of reconnection attempts before the client will log a message indicating that reconnect reconnection is being attempted.
      */
-    public Integer getFailoverWarnAfterReconnectAttempts() {
-        return failoverWarnAfterReconnectAttempts;
+    public Integer getReconnectWarnAfterReconnectAttempts() {
+        return warnAfterReconnectAttempts;
     }
 
     /**
-     * @param warnAfterReconnectAttempts Number of reconnection attempts before the client will log a message indicating that failover reconnection is being attempted. The default is to log every 10 connection attempts.
+     * @param warnAfterReconnectAttempts Number of reconnection attempts before the client will log a message indicating that reconnect reconnection is being attempted. The default is to log every 10 connection attempts.
      */
-    public void setFailovertWarnAfterReconnectAttempts(int warnAfterReconnectAttempts) {
-        this.failoverWarnAfterReconnectAttempts = warnAfterReconnectAttempts;
+    public void setReconnecttWarnAfterReconnectAttempts(int warnAfterReconnectAttempts) {
+        this.warnAfterReconnectAttempts = warnAfterReconnectAttempts;
     }
 
     /**
-     * @return True if the set of failover URIs is randomly shuffled prior to attempting to connect to one of them. This can help to distribute client connections more evenly across multiple remote peers.
+     * @return True if the set of reconnect URIs is randomly shuffled prior to attempting to connect to one of them. This can help to distribute client connections more evenly across multiple remote peers.
      */
-    public Boolean shouldFailoverRandomize() {
-        return failoverRandomize;
+    public Boolean shouldReconnectRandomize() {
+        return reconnectRandomize;
     }
 
     /**
-     * @param randomize True if the set of failover URIs is randomly shuffled prior to attempting to connect to one of them. 
+     * @param randomize True if the set of reconnect URIs is randomly shuffled prior to attempting to connect to one of them. 
      *                  This can help to distribute client connections more evenly across multiple remote peers. The default value is false.
      */
-    public void setFailoverRandomize(boolean randomize) {
-        this.failoverRandomize = randomize;
+    public void setReconnectRandomize(boolean randomize) {
+        this.reconnectRandomize = randomize;
     }
 
     /** 
-     * Controls how the failover transport behaves when the connection Open frame from the remote peer provides a list of failover hosts to the client.
+     * Controls how the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client.
      * This option accepts one of three values; REPLACE, ADD, or IGNORE (default is REPLACE).
-     * <li>If REPLACE is configured then all failover URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
-     * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of failover URIs, with de-duplication.</li>
-     * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of failover URIs in use.</li>
+     * <li>If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
+     * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
+     * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
      */
-    public AmqpOpenServerListAction getFailoverAmqpOpenServerListAction() {
-        return failoverAmqpOpenServerListAction;
+    public AmqpOpenServerListAction getReconnectAmqpOpenServerListAction() {
+        return reconnectAmqpOpenServerListAction;
     }
 
     /**
-     * Controls how the failover transport behaves when the connection Open frame from the remote peer provides a list of failover hosts to the client.
+     * Controls how the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client.
      * This option accepts one of three values; REPLACE, ADD, or IGNORE (default is REPLACE).
-     * <li>If REPLACE is configured then all failover URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
-     * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of failover URIs, with de-duplication.</li>
-     * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of failover URIs in use.</li>
+     * <li>If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
+     * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
+     * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
      */
-    public void setFailoverAmqpOpenServerListAction(AmqpOpenServerListAction amqpOpenServerListAction) {
-        this.failoverAmqpOpenServerListAction = amqpOpenServerListAction;
+    public void setReconnectAmqpOpenServerListAction(AmqpOpenServerListAction amqpOpenServerListAction) {
+        this.reconnectAmqpOpenServerListAction = amqpOpenServerListAction;
     }
     
     String getServiceBusQuery() {
@@ -263,47 +268,47 @@ public class ServiceBusJmsConnectionFactorySettings {
         return builder.toString();
     }
     
-    String getFailoverQuery() {
+    String getReconnectQuery() {
         StringBuilder queryBuilder = new StringBuilder();
         
-        if (failoverInitialReconnectDelay != null) {
-            appendQuery(queryBuilder, "failover.initialReconnectDelay", String.valueOf(failoverInitialReconnectDelay));
+        if (initialReconnectDelay != null) {
+            appendQuery(queryBuilder, "failover.initialReconnectDelay", String.valueOf(initialReconnectDelay));
         }
         
-        if (failoverReconnectDelay != null) {
-            appendQuery(queryBuilder, "failover.reconnectDelay", String.valueOf(failoverReconnectDelay));
+        if (reconnectDelay != null) {
+            appendQuery(queryBuilder, "failover.reconnectDelay", String.valueOf(reconnectDelay));
         }
         
-        if (failoverMaxReconnectDelay != null) {
-            appendQuery(queryBuilder, "failover.maxReconnectDelay", String.valueOf(failoverMaxReconnectDelay));
+        if (maxReconnectDelay != null) {
+            appendQuery(queryBuilder, "failover.maxReconnectDelay", String.valueOf(maxReconnectDelay));
         }
         
-        if (failoverUseReconnectBackOff != null) {
-            appendQuery(queryBuilder, "failover.useReconnectBackOff", String.valueOf(failoverUseReconnectBackOff));
+        if (useReconnectBackOff != null) {
+            appendQuery(queryBuilder, "failover.useReconnectBackOff", String.valueOf(useReconnectBackOff));
         }
         
-        if (failoverReconnectBackOffMultiplier != null) {
-            appendQuery(queryBuilder, "failover.reconnectBackOffMultiplier", String.valueOf(failoverReconnectBackOffMultiplier));
+        if (reconnectBackOffMultiplier != null) {
+            appendQuery(queryBuilder, "failover.reconnectBackOffMultiplier", String.valueOf(reconnectBackOffMultiplier));
         }
         
-        if (failoverMaxReconnectAttempts != null) {
-            appendQuery(queryBuilder, "failover.maxReconnectAttempts", String.valueOf(failoverMaxReconnectAttempts));
+        if (maxReconnectAttempts != null) {
+            appendQuery(queryBuilder, "failover.maxReconnectAttempts", String.valueOf(maxReconnectAttempts));
         }
         
-        if (failoverStartupMaxReconnectAttempts != null) {
-            appendQuery(queryBuilder, "failover.startupMaxReconnectAttempts", String.valueOf(failoverStartupMaxReconnectAttempts));
+        if (startupMaxReconnectAttempts != null) {
+            appendQuery(queryBuilder, "failover.startupMaxReconnectAttempts", String.valueOf(startupMaxReconnectAttempts));
         }
         
-        if (failoverWarnAfterReconnectAttempts != null) {
-            appendQuery(queryBuilder, "failover.warnAfterReconnectAttempts", String.valueOf(failoverWarnAfterReconnectAttempts));
+        if (warnAfterReconnectAttempts != null) {
+            appendQuery(queryBuilder, "failover.warnAfterReconnectAttempts", String.valueOf(warnAfterReconnectAttempts));
         }
 
-        if (failoverRandomize != null) {
-            appendQuery(queryBuilder, "failover.randomize", String.valueOf(failoverRandomize));
+        if (reconnectRandomize != null) {
+            appendQuery(queryBuilder, "failover.randomize", String.valueOf(reconnectRandomize));
         }
         
-        if (failoverAmqpOpenServerListAction != null) {
-            appendQuery(queryBuilder, "failover.amqpOpenServerListAction", failoverAmqpOpenServerListAction.name());
+        if (reconnectAmqpOpenServerListAction != null) {
+            appendQuery(queryBuilder, "failover.amqpOpenServerListAction", reconnectAmqpOpenServerListAction.name());
         }
         
         return queryBuilder.toString();
