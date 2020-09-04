@@ -3,9 +3,6 @@
 #Test files
 src/test/
 
-#Resource files
-resources/
-
 #External libs
 extlib/
 
