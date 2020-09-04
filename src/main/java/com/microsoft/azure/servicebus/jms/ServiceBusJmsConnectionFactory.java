@@ -69,7 +69,7 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         String serviceBusQuery = settings.getServiceBusQuery();
         String destinationUri = "amqps://" + host + serviceBusQuery;
         if (settings.shouldReconnect()) {
-            destinationUri = getFailoverUri(destinationUri, settings);
+            destinationUri = getReconnectUri(destinationUri, settings);
         }
         
         this.factory = new JmsConnectionFactory(sasKeyName, sasKey, destinationUri);
@@ -175,18 +175,18 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
     
     // Obtain the failover URI in the form that QPID could understand.
     // Example: failover:(amqps://contoso.servicebus.windows.net?amqp.idleTimeout=30000,amqps://contoso2.servicebus.windows.net?amqp.idleTimeout=30000)?failover.maxReconnectAttempts=20
-    private String getFailoverUri(String originalHost, ServiceBusJmsConnectionFactorySettings settings) {
+    private String getReconnectUri(String originalHost, ServiceBusJmsConnectionFactorySettings settings) {
         StringBuilder builder = new StringBuilder("failover:(");
         builder.append(originalHost);
         
-        String[] failoverHosts = settings.getReconnectHosts();
+        String[] reconnectHosts = settings.getReconnectHosts();
         if (settings.getReconnectHosts() != null) {
             String serviceBusQuery = settings.getServiceBusQuery();
             
-            for (String failoverHost: failoverHosts) {
+            for (String reconnectHost: reconnectHosts) {
                 builder.append(",");
                 builder.append("amqps://");
-                builder.append(failoverHost);
+                builder.append(reconnectHost);
                 builder.append(serviceBusQuery);
             }
         }
