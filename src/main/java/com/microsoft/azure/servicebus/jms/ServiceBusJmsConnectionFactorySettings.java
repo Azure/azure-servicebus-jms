@@ -12,7 +12,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     private boolean traceFrames;
     
     // QPID reconnect options
-    private boolean shouldReconnect = true;
+    private boolean shouldReconnect; // TODO: should this value default to true?
     private String[] reconnectHosts;
     private Long initialReconnectDelay;
     private Long reconnectDelay;
@@ -23,14 +23,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     private Integer startupMaxReconnectAttempts;
     private Integer warnAfterReconnectAttempts;
     private Boolean reconnectRandomize;
-    private AmqpOpenServerListAction reconnectAmqpOpenServerListAction;
-    
-    /**
-    * <li>If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
-    * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
-    * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
-    */
-    public enum AmqpOpenServerListAction { REPLACE, ADD, IGNORE };
+    private ReconnectAmqpOpenServerListAction reconnectAmqpOpenServerListAction;
     
     public ServiceBusJmsConnectionFactorySettings() { }
     
@@ -178,21 +171,21 @@ public class ServiceBusJmsConnectionFactorySettings {
     /**
      * @return The number of reconnection attempts allowed before reporting the connection as failed to the client.
      */
-    public Integer getReconnectMaxReconnectAttempts() {
+    public Integer getMaxReconnectAttempts() {
         return maxReconnectAttempts;
     }
 
     /**
      * @param maxReconnectAttempts The number of reconnection attempts allowed before reporting the connection as failed to the client. The default is no limit or (-1).
      */
-    public void setReconnectMaxReconnectAttempts(int maxReconnectAttempts) {
+    public void setMaxReconnectAttempts(int maxReconnectAttempts) {
         this.maxReconnectAttempts = maxReconnectAttempts;
     }
 
     /**
      * @return For a client that has never connected to a remote peer before this option control how many attempts are made to connect before reporting the connection as failed.
      */
-    public Integer getReconnectStartupMaxReconnectAttempts() {
+    public Integer getStartupMaxReconnectAttempts() {
         return startupMaxReconnectAttempts;
     }
 
@@ -200,21 +193,21 @@ public class ServiceBusJmsConnectionFactorySettings {
      * @param startupMaxReconnectAttempts For a client that has never connected to a remote peer before this option control how many attempts are made to connect before reporting the connection as failed. 
      *                                    The default is to use the value of maxReconnectAttempts.
      */
-    public void setReconnectStartupMaxReconnectAttempts(int startupMaxReconnectAttempts) {
+    public void setStartupMaxReconnectAttempts(int startupMaxReconnectAttempts) {
         this.startupMaxReconnectAttempts = startupMaxReconnectAttempts;
     }
 
     /**
      * @return Number of reconnection attempts before the client will log a message indicating that reconnect reconnection is being attempted.
      */
-    public Integer getReconnectWarnAfterReconnectAttempts() {
+    public Integer getWarnAfterReconnectAttempts() {
         return warnAfterReconnectAttempts;
     }
 
     /**
      * @param warnAfterReconnectAttempts Number of reconnection attempts before the client will log a message indicating that reconnect reconnection is being attempted. The default is to log every 10 connection attempts.
      */
-    public void setReconnecttWarnAfterReconnectAttempts(int warnAfterReconnectAttempts) {
+    public void setWarnAfterReconnectAttempts(int warnAfterReconnectAttempts) {
         this.warnAfterReconnectAttempts = warnAfterReconnectAttempts;
     }
 
@@ -240,7 +233,7 @@ public class ServiceBusJmsConnectionFactorySettings {
      * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
      * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
      */
-    public AmqpOpenServerListAction getReconnectAmqpOpenServerListAction() {
+    public ReconnectAmqpOpenServerListAction getReconnectAmqpOpenServerListAction() {
         return reconnectAmqpOpenServerListAction;
     }
 
@@ -251,7 +244,7 @@ public class ServiceBusJmsConnectionFactorySettings {
      * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
      * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
      */
-    public void setReconnectAmqpOpenServerListAction(AmqpOpenServerListAction amqpOpenServerListAction) {
+    public void setReconnectAmqpOpenServerListAction(ReconnectAmqpOpenServerListAction amqpOpenServerListAction) {
         this.reconnectAmqpOpenServerListAction = amqpOpenServerListAction;
     }
     

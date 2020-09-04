@@ -68,7 +68,7 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         
         String serviceBusQuery = settings.getServiceBusQuery();
         String destinationUri = "amqps://" + host + serviceBusQuery;
-        if (settings.shouldUseFailover()) {
+        if (settings.shouldReconnect()) {
             destinationUri = getFailoverUri(destinationUri, settings);
         }
         
@@ -179,8 +179,8 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         StringBuilder builder = new StringBuilder("failover:(");
         builder.append(originalHost);
         
-        String[] failoverHosts = settings.getFailoverHosts();
-        if (settings.getFailoverHosts() != null) {
+        String[] failoverHosts = settings.getReconnectHosts();
+        if (settings.getReconnectHosts() != null) {
             String serviceBusQuery = settings.getServiceBusQuery();
             
             for (String failoverHost: failoverHosts) {
@@ -192,7 +192,7 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         }
         
         builder.append(")");
-        builder.append(settings.getFailoverQuery());
+        builder.append(settings.getReconnectQuery());
         return builder.toString();
     }
 }
