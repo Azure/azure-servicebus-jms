@@ -12,7 +12,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     private boolean traceFrames;
     
     // QPID reconnect options
-    private boolean shouldReconnect; // TODO: should this value default to true?
+    private boolean shouldReconnect = true; // Reconnect will happen by default
     private String[] reconnectHosts;
     private Long initialReconnectDelay;
     private Long reconnectDelay;

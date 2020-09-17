@@ -173,7 +173,7 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         return this.factory.createQueueConnection(userName, password);
     }
     
-    // Obtain the failover URI in the form that QPID could understand.
+    // Obtain the reconnect URI in the form that QPID could understand.
     // Example: failover:(amqps://contoso.servicebus.windows.net?amqp.idleTimeout=30000,amqps://contoso2.servicebus.windows.net?amqp.idleTimeout=30000)?failover.maxReconnectAttempts=20
     private String getReconnectUri(String originalHost, ServiceBusJmsConnectionFactorySettings settings) {
         StringBuilder builder = new StringBuilder("failover:(");
