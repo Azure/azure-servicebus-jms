@@ -71,28 +71,12 @@ public class ServiceBusJmsConnectionFactorySettings {
 
     /**
      * @param reconnectHosts The array of ServiceBus hosts that the client should reconnect to in case of a connection failure.
-     *                      An example value is contoso.servicebus.windows.net.
+     *                       An example value is contoso.servicebus.windows.net.
+     *                       Please note that the same SAS keys from the original host will be used upon the reconnct host for authentication.
      *                          
      */
     public void setReconnectHosts(String[] reconnectHosts) {
         this.reconnectHosts = reconnectHosts;
-    }
-    
-    /**
-     * @param connectionStrings The array of ServiceBus ConnectionStrings that will be parsed to obtain the hosts that 
-     *                          the client should reconnect to in case of a connection failure.
-     */
-    public void setReconnectHostsByConnectionString(String[] connectionStrings) {
-        if (connectionStrings != null) {
-            String[] hosts = new String[connectionStrings.length];
-            
-            for (int i = 0; i < connectionStrings.length; i++) {
-                ConnectionStringBuilder builder = new ConnectionStringBuilder(connectionStrings[i]);
-                hosts[i] = builder.getEndpoint().getHost();
-            }
-            
-            this.reconnectHosts = hosts;
-        }
     }
     
     /**
