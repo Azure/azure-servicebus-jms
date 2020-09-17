@@ -56,7 +56,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     }
 
     /**
-     * @param shouldUseReconnect True if the reconnect functionalities implement by QPID should be leveraged. Default is true.
+     * @param shouldReconnect True if the reconnect functionalities implement by QPID should be leveraged. Default is true.
      */
     public void setShouldReconnect(boolean shouldReconnect) {
         this.shouldReconnect = shouldReconnect;
@@ -211,22 +211,22 @@ public class ServiceBusJmsConnectionFactorySettings {
     }
 
     /** 
-     * Controls how the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client.
+     * @return Returns how the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client.
      * This option accepts one of three values; REPLACE, ADD, or IGNORE (default is REPLACE).
-     * <li>If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
-     * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
-     * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
+     * If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.
+     * If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.
+     * If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.
      */
     public ReconnectAmqpOpenServerListAction getReconnectAmqpOpenServerListAction() {
         return reconnectAmqpOpenServerListAction;
     }
 
     /**
-     * Controls how the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client.
-     * This option accepts one of three values; REPLACE, ADD, or IGNORE (default is REPLACE).
-     * <li>If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.</li>
-     * <li>If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.</li>
-     * <li>If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.</li>
+     * @param amqpOpenServerListAction Controls how the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client.
+     *                                 This option accepts one of three values; REPLACE, ADD, or IGNORE (default is REPLACE).
+     *                                 If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.
+     *                                 If ADD is configured then the URIs provided by the remote are added to the existing set of reconnect URIs, with de-duplication.
+     *                                 If IGNORE is configured then any updates from the remote are dropped and no changes are made to the set of reconnect URIs in use.
      */
     public void setReconnectAmqpOpenServerListAction(ReconnectAmqpOpenServerListAction amqpOpenServerListAction) {
         this.reconnectAmqpOpenServerListAction = amqpOpenServerListAction;
