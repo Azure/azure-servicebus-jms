@@ -3,12 +3,15 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import java.util.function.Supplier;
+
+import io.netty.handler.proxy.ProxyHandler;
 
 public class ServiceBusJmsConnectionFactorySettings {
     // a flag added to the AMQP connection to indicate it's a ServiceBus ConnectionFactory client
     static final String IsClientProvider = "com.microsoft:is-client-provider";
     private long connectionIdleTimeoutMS;
+    private Supplier<ProxyHandler> proxyHandlerSupplier;
     private boolean traceFrames;
     
     // QPID reconnect options
@@ -38,6 +41,14 @@ public class ServiceBusJmsConnectionFactorySettings {
     
     public void setConnectionIdleTimeoutMS(long connectionIdleTimeoutMS) {
         this.connectionIdleTimeoutMS = connectionIdleTimeoutMS;
+    }
+    
+    public Supplier<ProxyHandler> getProxyHandlerSupplier() {
+        return proxyHandlerSupplier;
+    }
+
+    public void setProxyHandlerSupplier(Supplier<ProxyHandler> proxyHandlerSupplier) {
+        this.proxyHandlerSupplier = proxyHandlerSupplier;
     }
     
     public boolean isTraceFrames() {
