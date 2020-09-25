@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -21,6 +22,8 @@ import org.apache.qpid.jms.JmsConnectionExtensions;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+
+import io.netty.handler.proxy.ProxyHandler;
 
 public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueConnectionFactory, TopicConnectionFactory {
     private static final int MaxCustomUserAgentLength = 128;
@@ -98,6 +101,13 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
 
             return properties;
         });
+
+        Supplier<ProxyHandler> proxyHandlerSupplier = settings.getProxyHandlerSupplier();
+        if (proxyHandlerSupplier != null) {
+            factory.setExtension(JmsConnectionExtensions.PROXY_HANDLER_SUPPLIER.toString(), (connection, remote) -> {
+                return proxyHandlerSupplier;
+            });
+        }
     }
     
     JmsConnectionFactory getConectionFactory() {
