@@ -31,7 +31,12 @@ public class ServiceBusJmsConnectionFactorySettings {
     private ReconnectAmqpOpenServerListAction reconnectAmqpOpenServerListAction;
     
     public ServiceBusJmsConnectionFactorySettings() { }
-    
+
+    public ServiceBusJmsConnectionFactorySettings(long connectionIdleTimeoutMS, boolean traceFrames) {
+        this.connectionIdleTimeoutMS = connectionIdleTimeoutMS;
+        this.traceFrames = traceFrames;
+    }
+
     public ServiceBusJmsConnectionFactorySettings(long connectionIdleTimeoutMS, boolean traceFrames, HashMap<String, String> jmsConfigurationOptions) {
         this.connectionIdleTimeoutMS = connectionIdleTimeoutMS;
         this.traceFrames = traceFrames;
