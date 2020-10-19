@@ -4,6 +4,7 @@
 package com.microsoft.azure.servicebus.jms;
 
 import java.util.function.Supplier;
+import java.util.HashMap;
 
 import io.netty.handler.proxy.ProxyHandler;
 
@@ -13,7 +14,9 @@ public class ServiceBusJmsConnectionFactorySettings {
     private long connectionIdleTimeoutMS;
     private Supplier<ProxyHandler> proxyHandlerSupplier;
     private boolean traceFrames;
-    
+    // QPID configuration options https://qpid.apache.org/releases/qpid-jms-0.53.0/docs/index.html
+    // It could be AMQP, JMS or other configurations used in the connection URI.
+    private HashMap<String, String> configurationOptions;
     // QPID reconnect options
     private boolean shouldReconnect = true; // Reconnect will happen by default
     private String[] reconnectHosts;
@@ -29,10 +32,14 @@ public class ServiceBusJmsConnectionFactorySettings {
     private ReconnectAmqpOpenServerListAction reconnectAmqpOpenServerListAction;
     
     public ServiceBusJmsConnectionFactorySettings() { }
-    
+
     public ServiceBusJmsConnectionFactorySettings(long connectionIdleTimeoutMS, boolean traceFrames) {
         this.connectionIdleTimeoutMS = connectionIdleTimeoutMS;
         this.traceFrames = traceFrames;
+    }
+
+    public ServiceBusJmsConnectionFactorySettings(HashMap<String, String> configurationOptions) {
+        this.configurationOptions = configurationOptions;
     }
     
     public long getConnectionIdleTimeoutMS() {
@@ -251,6 +258,12 @@ public class ServiceBusJmsConnectionFactorySettings {
         
         if (traceFrames) {
             appendQuery(builder, "amqp.traceFrames", "true");
+        }
+
+        if (configurationOptions != null) {
+            for (String option : configurationOptions.keySet()) {
+                appendQuery(builder, option, configurationOptions.get(option));
+            }
         }
         
         return builder.toString();
