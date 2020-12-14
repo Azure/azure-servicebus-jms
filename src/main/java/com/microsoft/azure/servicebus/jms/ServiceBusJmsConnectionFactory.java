@@ -71,12 +71,13 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
             settings = new ServiceBusJmsConnectionFactorySettings();
         }
         
-        String serviceBusQuery = settings.getServiceBusQuery();
-        String destinationUri = "amqps://" + host + serviceBusQuery;
+        String destinationUri = "amqps://" + host;
         if (settings.shouldReconnect()) {
             destinationUri = getReconnectUri(destinationUri, settings);
         }
         
+        String serviceBusQuery = settings.getServiceBusQuery();
+        destinationUri += serviceBusQuery;
         this.factory = new JmsConnectionFactory(sasKeyName, sasKey, destinationUri);
         this.factory.setExtension(JmsConnectionExtensions.AMQP_OPEN_PROPERTIES.toString(), (connection, uri) -> {
             Map<String, Object> properties = new HashMap<>();
