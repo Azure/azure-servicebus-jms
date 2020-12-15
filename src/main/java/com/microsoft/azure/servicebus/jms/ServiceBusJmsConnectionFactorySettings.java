@@ -259,6 +259,9 @@ public class ServiceBusJmsConnectionFactorySettings {
         if (traceFrames) {
             appendQuery(builder, "amqp.traceFrames", "true");
         }
+        
+        // Set prefetch to 0 by default, or else QPID will use 1000 as default value
+        appendQuery(builder, "jms.prefetchPolicy.all", "0");
 
         if (configurationOptions != null) {
             for (String option : configurationOptions.keySet()) {
