@@ -13,7 +13,8 @@ import javax.jms.JMSRuntimeException;
 import javax.jms.Topic;
 import org.apache.qpid.jms.JmsTopic;
 
-public class ServiceBusJmsTopic extends JNDIStorable implements Topic {
+/** Intended for JNDI use only. Users should not be actively referencing this class */
+public final class ServiceBusJmsTopic extends JNDIStorable implements Topic {
     // JNDI property name
     static final String NAME_PROPERTY = "physicalName";
     private Topic innerTopic;

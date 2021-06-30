@@ -14,7 +14,8 @@ import javax.jms.JMSRuntimeException;
 import javax.jms.Queue;
 import org.apache.qpid.jms.JmsQueue;
 
-public class ServiceBusJmsQueue extends JNDIStorable implements Queue {
+/** Intended for JNDI use only. Users should not be actively referencing this class */
+public final class ServiceBusJmsQueue extends JNDIStorable implements Queue {
     // JNDI property name
     static final String NAME_PROPERTY = "physicalName";
     private Queue innerQueue;

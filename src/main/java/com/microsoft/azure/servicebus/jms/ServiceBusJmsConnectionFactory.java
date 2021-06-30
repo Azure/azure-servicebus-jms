@@ -237,7 +237,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         String connectionString = this.builder == null ? null : this.builder.toString();
         properties.put(CONNECTION_STRING_PROPERTY, connectionString);
 
-        if (!StringUtil.isNullOrEmpty(this.getClientId())) {
+        if (this.factory != null && StringUtil.isNullOrEmpty(this.getClientId())) {
             properties.put(CLIENT_ID_PROPERTY, this.getClientId());
         }
         
@@ -248,6 +248,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     protected void setProperties(Map<String, String> properties) {
         // TODO: support JNDI for the various configurations of ServiceBusJmsConnectionFactorySettings
         String connectionString = null;
+        String clientId = null;
         for (Map.Entry<String,String> property : properties.entrySet()) {
             String propertyName = property.getKey();
             if (propertyName != null) {
@@ -256,7 +257,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
                 }
                 
                 if (propertyName.equalsIgnoreCase(CLIENT_ID_PROPERTY)) {
-                    this.setClientId(property.getValue());
+                    clientId = property.getValue();
                 }
             }
         }
@@ -264,6 +265,12 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.checkRequiredProperty(CONNECTION_STRING_PROPERTY, connectionString);
         this.builder = new ConnectionStringBuilder(connectionString);
         this.initialize(this.builder.getSasKeyName(), this.builder.getSasKey(), this.builder.getEndpoint().getHost(), null);
+    
+        // Need to wait until the inner factory is initialized in order to set the clientId
+        if (!StringUtil.isNullOrEmpty(clientId)) {
+            // QPID does not allow setting null or empty clientId
+            this.setClientId(clientId);
+        }
     }
     
     ConnectionFactory getConectionFactory() {
