@@ -5,10 +5,13 @@ package com.microsoft.azure.servicebus.jms;
 
 import java.util.function.Supplier;
 import java.util.HashMap;
+import java.util.Map;
 
 import io.netty.handler.proxy.ProxyHandler;
 
 public class ServiceBusJmsConnectionFactorySettings {
+    private static Map<String, String> DefaultConfigurationOptions = getDefaultConfigurationOptions();
+    
     // a flag added to the AMQP connection to indicate it's a ServiceBus ConnectionFactory client
     static final String IsClientProvider = "com.microsoft:is-client-provider";
     private long connectionIdleTimeoutMS;
@@ -38,6 +41,11 @@ public class ServiceBusJmsConnectionFactorySettings {
         this.traceFrames = traceFrames;
     }
 
+    /**
+     * Configure QPID JMS case sensitive options for this ConnectionFactory.
+     * Please see <a href="https://qpid.apache.org/releases/qpid-jms-0.41.0/docs/index.html#jms-configuration-options">
+     * https://qpid.apache.org/releases/qpid-jms-0.41.0/docs/index.html#jms-configuration-options</a> for the complete list of options.
+     */
     public ServiceBusJmsConnectionFactorySettings(HashMap<String, String> configurationOptions) {
         this.configurationOptions = configurationOptions;
     }
@@ -260,12 +268,17 @@ public class ServiceBusJmsConnectionFactorySettings {
             appendQuery(builder, "amqp.traceFrames", "true");
         }
         
-        // Set prefetch to 0 by default, or else QPID will use 1000 as default value
-        appendQuery(builder, "jms.prefetchPolicy.all", "0");
-
-        if (configurationOptions != null) {
+        if (configurationOptions != null && !configurationOptions.isEmpty()) {
             for (String option : configurationOptions.keySet()) {
                 appendQuery(builder, option, configurationOptions.get(option));
+            }
+        }
+        
+        // Append the default options if the ones provided by the user does not contain it.
+        // Since these are query parameters, they are case sensitive.
+        for (String defaultOption : DefaultConfigurationOptions.keySet()) {
+            if (!configurationOptions.containsKey(defaultOption)) {
+                appendQuery(builder, defaultOption, DefaultConfigurationOptions.get(defaultOption));
             }
         }
         
@@ -324,5 +337,11 @@ public class ServiceBusJmsConnectionFactorySettings {
         }
         
         builder.append((builder.length() == 0) ? "?" : "&").append(key).append("=").append(value);
+    }
+    
+    private static Map<String, String> getDefaultConfigurationOptions() {
+        Map<String, String> defaultConfigurationOptions = new HashMap<String, String>();
+        defaultConfigurationOptions.put("jms.prefetchPolicy.all", "0");
+        return defaultConfigurationOptions;
     }
 }
