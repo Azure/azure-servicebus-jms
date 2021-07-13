@@ -246,6 +246,10 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     
     @Override
     protected void setProperties(Map<String, String> properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException("The given properties should not be null.");
+        }
+        
         // TODO: support JNDI for the various configurations of ServiceBusJmsConnectionFactorySettings
         String connectionString = null;
         String clientId = null;
