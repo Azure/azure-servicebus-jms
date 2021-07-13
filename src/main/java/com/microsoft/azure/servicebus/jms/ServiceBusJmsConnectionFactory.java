@@ -4,6 +4,9 @@
 package com.microsoft.azure.servicebus.jms;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -21,15 +24,27 @@ import javax.jms.TopicConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionExtensions;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
+import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
 import io.netty.handler.proxy.ProxyHandler;
+import io.netty.util.internal.StringUtil;
 
-public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueConnectionFactory, TopicConnectionFactory {
+public class ServiceBusJmsConnectionFactory extends JNDIStorable implements ConnectionFactory, QueueConnectionFactory, TopicConnectionFactory {
+    // JNDI property names
+    private static final String CONNECTION_STRING_PROPERTY = "connectionString";
+    private static final String CLIENT_ID_PROPERTY = "clientId";
+    
     private static final int MaxCustomUserAgentLength = 128;
-    private final JmsConnectionFactory factory;
+    private volatile boolean initialized;
+    private JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
     private String customUserAgent;
+    
+    /**
+     * Intended to be used by JNDI only. Users should not be actively calling this constructor to create a ServiceBusJmsConnectionFactory instance.
+     */
+    public ServiceBusJmsConnectionFactory() { }
     
     /**
      * Create a ServiceBusJmsConnectionFactory using a given Azure ServiceBus connection string.
@@ -48,11 +63,11 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
      * @param settings The options used for this ConnectionFactory. Null can be used as default.
      */
     public ServiceBusJmsConnectionFactory(ConnectionStringBuilder connectionStringBuilder, ServiceBusJmsConnectionFactorySettings settings) {
-        this(connectionStringBuilder.getSasKeyName(),
+        this.builder = connectionStringBuilder;
+        this.initialize(connectionStringBuilder.getSasKeyName(),
                 connectionStringBuilder.getSasKey(),
                 connectionStringBuilder.getEndpoint().getHost(),
                 settings);
-        this.builder = connectionStringBuilder;
     }
     
     /**
@@ -63,12 +78,24 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
      * @param settings The options used for this ConnectionFactory. Null can be used as default.
      */
     public ServiceBusJmsConnectionFactory(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
+        this.initialize(sasKeyName, sasKey, host, settings);
+    }
+    
+    private void initialize(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
         if (sasKeyName == null || sasKeyName == null || host == null) {
             throw new IllegalArgumentException("SAS Key, SAS KeyName and the host cannot be null for a ServiceBus connection factory.");
         }
         
         if (settings == null) {
             settings = new ServiceBusJmsConnectionFactorySettings();
+        }
+        
+        if (this.builder == null) {
+            try {
+                this.builder = new ConnectionStringBuilder(new URI(host), null, sasKeyName, sasKey);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }
         
         String destinationUri = "amqps://" + host;
@@ -109,10 +136,8 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
                 return proxyHandlerSupplier;
             });
         }
-    }
-    
-    JmsConnectionFactory getConectionFactory() {
-        return factory;
+        
+        this.initialized = true;
     }
     
     public ConnectionStringBuilder getConnectionStringBuilder() {
@@ -133,7 +158,129 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
     public void setClientId(String clientId) {
         this.factory.setClientID(clientId);
     }
+    
+    @Override
+    public Connection createConnection() throws JMSException {
+        this.ensureInitialized();
+        Connection innerConnection = this.factory.createConnection();
+        return new ServiceBusJmsConnection(innerConnection);
+    }
 
+    @Override
+    public Connection createConnection(String userName, String password) throws JMSException {
+        this.ensureInitialized();
+        Connection innerConnection = this.factory.createConnection(userName, password);
+        return new ServiceBusJmsConnection(innerConnection);
+    }
+
+    @Override
+    public JMSContext createContext() {
+        this.ensureInitialized();
+        JMSContext innerContext = this.factory.createContext();
+        return new ServiceBusJmsContext(innerContext);
+    }
+
+    @Override
+    public JMSContext createContext(int sessionMode) {
+        this.ensureInitialized();
+        JMSContext innerContext = this.factory.createContext(sessionMode);
+        return new ServiceBusJmsContext(innerContext);
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password) {
+        this.ensureInitialized();
+        JMSContext innerContext = this.factory.createContext(userName, password);
+        return new ServiceBusJmsContext(innerContext);
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password, int sessionMode) {
+        this.ensureInitialized();
+        JMSContext innerContext = this.factory.createContext(userName, password, sessionMode);
+        return new ServiceBusJmsContext(innerContext);
+    }
+
+    @Override
+    public TopicConnection createTopicConnection() throws JMSException {
+        this.ensureInitialized();
+        TopicConnection innerTopicConnection = this.factory.createTopicConnection();
+        return new ServiceBusJmsTopicConnection(innerTopicConnection);
+    }
+
+    @Override
+    public TopicConnection createTopicConnection(String userName, String password) throws JMSException {
+        this.ensureInitialized();
+        TopicConnection innerTopicConnection = this.factory.createTopicConnection(userName, password);
+        return new ServiceBusJmsTopicConnection(innerTopicConnection);
+    }
+
+    @Override
+    public QueueConnection createQueueConnection() throws JMSException {
+        this.ensureInitialized();
+        QueueConnection innerQueueConnection = this.factory.createQueueConnection();
+        return new ServiceBusJmsQueueConnection(innerQueueConnection);
+    }
+
+    @Override
+    public QueueConnection createQueueConnection(String userName, String password) throws JMSException {
+        this.ensureInitialized();
+        QueueConnection innerQueueConnection = this.factory.createQueueConnection(userName, password);
+        return new ServiceBusJmsQueueConnection(innerQueueConnection);
+    }
+    
+    @Override
+    protected Map<String, String> getProperties() {
+        // build a map of properties for JNDI
+        Map<String, String> properties = new HashMap<String, String>();
+        
+        String connectionString = this.builder == null ? null : this.builder.toString();
+        properties.put(CONNECTION_STRING_PROPERTY, connectionString);
+
+        if (this.factory != null && StringUtil.isNullOrEmpty(this.getClientId())) {
+            properties.put(CLIENT_ID_PROPERTY, this.getClientId());
+        }
+        
+        return Collections.unmodifiableMap(properties);
+    }
+    
+    @Override
+    protected void setProperties(Map<String, String> properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException("The given properties should not be null.");
+        }
+        
+        // TODO: support JNDI for the various configurations of ServiceBusJmsConnectionFactorySettings
+        String connectionString = null;
+        String clientId = null;
+        for (Map.Entry<String,String> property : properties.entrySet()) {
+            String propertyName = property.getKey();
+            if (propertyName != null) {
+                if (propertyName.equalsIgnoreCase(CONNECTION_STRING_PROPERTY)) {
+                    connectionString = property.getValue();
+                }
+                
+                if (propertyName.equalsIgnoreCase(CLIENT_ID_PROPERTY)) {
+                    clientId = property.getValue();
+                }
+            }
+        }
+        
+        this.checkRequiredProperty(CONNECTION_STRING_PROPERTY, connectionString);
+        this.builder = new ConnectionStringBuilder(connectionString);
+        this.initialize(this.builder.getSasKeyName(), this.builder.getSasKey(), this.builder.getEndpoint().getHost(), null);
+    
+        // Need to wait until the inner factory is initialized in order to set the clientId
+        if (!StringUtil.isNullOrEmpty(clientId)) {
+            // QPID does not allow setting null or empty clientId
+            this.setClientId(clientId);
+        }
+    }
+    
+    ConnectionFactory getConectionFactory() {
+        return factory;
+    }
+    
     protected String getCustomUserAgent() {
         return customUserAgent;
     }
@@ -144,56 +291,6 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         }
         
         this.customUserAgent = customUserAgent;
-    }
-    
-    @Override
-    public Connection createConnection() throws JMSException {
-        return this.factory.createConnection();
-    }
-
-    @Override
-    public Connection createConnection(String userName, String password) throws JMSException {
-        return this.factory.createConnection(userName, password);
-    }
-
-    @Override
-    public JMSContext createContext() {
-        return this.factory.createContext();
-    }
-
-    @Override
-    public JMSContext createContext(int sessionMode) {
-        return this.factory.createContext(sessionMode);
-    }
-
-    @Override
-    public JMSContext createContext(String userName, String password) {
-        return this.factory.createContext(userName, password);
-    }
-
-    @Override
-    public JMSContext createContext(String userName, String password, int sessionMode) {
-        return this.factory.createContext(userName, password, sessionMode);
-    }
-
-    @Override
-    public TopicConnection createTopicConnection() throws JMSException {
-        return this.factory.createTopicConnection();
-    }
-
-    @Override
-    public TopicConnection createTopicConnection(String userName, String password) throws JMSException {
-        return this.factory.createTopicConnection(userName, password);
-    }
-
-    @Override
-    public QueueConnection createQueueConnection() throws JMSException {
-        return this.factory.createQueueConnection();
-    }
-
-    @Override
-    public QueueConnection createQueueConnection(String userName, String password) throws JMSException {
-        return this.factory.createQueueConnection(userName, password);
     }
     
     // Obtain the reconnect URI in the form that QPID could understand.
@@ -217,5 +314,11 @@ public class ServiceBusJmsConnectionFactory implements ConnectionFactory, QueueC
         builder.append(")");
         builder.append(settings.getReconnectQuery());
         return builder.toString();
+    }
+    
+    private void ensureInitialized() {
+        if (!this.initialized) {
+            throw new RuntimeException("This ServiceBusJmsConnectionFactory object is not initialized with the proper parameters.");
+        }
     }
 }

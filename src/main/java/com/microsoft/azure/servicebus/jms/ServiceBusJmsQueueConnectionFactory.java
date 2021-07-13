@@ -12,7 +12,7 @@ import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 public class ServiceBusJmsQueueConnectionFactory extends ServiceBusJmsConnectionFactory implements QueueConnectionFactory {
 
     public ServiceBusJmsQueueConnectionFactory(String connectionString, ServiceBusJmsConnectionFactorySettings settings) {
-       super(connectionString, settings);
+        super(connectionString, settings);
     }
     
     public ServiceBusJmsQueueConnectionFactory(ConnectionStringBuilder connectionStringBuilder, ServiceBusJmsConnectionFactorySettings settings) {
@@ -24,10 +24,12 @@ public class ServiceBusJmsQueueConnectionFactory extends ServiceBusJmsConnection
     }
 
     public QueueConnection createQueueConnection() throws JMSException {
-        return this.getConectionFactory().createQueueConnection();
+        QueueConnection innerQueueConnection = super.createQueueConnection();
+        return new ServiceBusJmsQueueConnection(innerQueueConnection);
     }
 
     public QueueConnection createQueueConnection(String userName, String password) throws JMSException {
-        return this.getConectionFactory().createQueueConnection(userName, password);
+        QueueConnection innerQueueConnection = super.createQueueConnection(userName, password);
+        return new ServiceBusJmsQueueConnection(innerQueueConnection);
     }
 }

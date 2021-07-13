@@ -1,8 +1,5 @@
 *.class
 
-#Test files
-src/test/
-
 #External libs
 extlib/
 

@@ -24,10 +24,12 @@ public class ServiceBusJmsTopicConnectionFactory extends ServiceBusJmsConnection
     }
 
     public TopicConnection createTopicConnection() throws JMSException {
-        return this.getConectionFactory().createTopicConnection();
+        TopicConnection innerTopicConnection = super.createTopicConnection();
+        return new ServiceBusJmsTopicConnection(innerTopicConnection);
     }
 
     public TopicConnection createTopicConnection(String userName, String password) throws JMSException {
-        return this.getConectionFactory().createTopicConnection(userName, password);
+        TopicConnection innerTopicConnection = super.createTopicConnection(userName, password);
+        return new ServiceBusJmsTopicConnection(innerTopicConnection);
     }
 }
