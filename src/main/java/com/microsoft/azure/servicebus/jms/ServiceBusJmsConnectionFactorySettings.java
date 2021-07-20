@@ -19,7 +19,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     private boolean traceFrames;
     // QPID configuration options https://qpid.apache.org/releases/qpid-jms-0.53.0/docs/index.html
     // It could be AMQP, JMS or other configurations used in the connection URI.
-    private HashMap<String, String> configurationOptions;
+    private Map<String, String> configurationOptions;
     // QPID reconnect options
     private boolean shouldReconnect = true; // Reconnect will happen by default
     private String[] reconnectHosts;
@@ -46,7 +46,7 @@ public class ServiceBusJmsConnectionFactorySettings {
      * Please see <a href="https://qpid.apache.org/releases/qpid-jms-0.41.0/docs/index.html#jms-configuration-options">
      * https://qpid.apache.org/releases/qpid-jms-0.41.0/docs/index.html#jms-configuration-options</a> for the complete list of options.
      */
-    public ServiceBusJmsConnectionFactorySettings(HashMap<String, String> configurationOptions) {
+    public ServiceBusJmsConnectionFactorySettings(Map<String, String> configurationOptions) {
         this.configurationOptions = configurationOptions;
     }
     
@@ -72,6 +72,10 @@ public class ServiceBusJmsConnectionFactorySettings {
     
     public void setTraceFrames(boolean traceFrames) {
         this.traceFrames = traceFrames;
+    }
+    
+    public Map<String, String> getConfigurationOptions() {
+        return this.configurationOptions;
     }
     
     /**
@@ -268,18 +272,20 @@ public class ServiceBusJmsConnectionFactorySettings {
             appendQuery(builder, "amqp.traceFrames", "true");
         }
         
-        if (configurationOptions != null && !configurationOptions.isEmpty()) {
-            for (String option : configurationOptions.keySet()) {
-                appendQuery(builder, option, configurationOptions.get(option));
-            }
+        if (this.configurationOptions == null) {
+            this.configurationOptions = new HashMap<String, String>();
         }
         
         // Append the default options if the ones provided by the user does not contain it.
         // Since these are query parameters, they are case sensitive.
         for (String defaultOption : DefaultConfigurationOptions.keySet()) {
             if (!configurationOptions.containsKey(defaultOption)) {
-                appendQuery(builder, defaultOption, DefaultConfigurationOptions.get(defaultOption));
+                configurationOptions.put(defaultOption, DefaultConfigurationOptions.get(defaultOption));
             }
+        }
+        
+        for (String option : configurationOptions.keySet()) {
+            appendQuery(builder, option, configurationOptions.get(option));
         }
         
         return builder.toString();
