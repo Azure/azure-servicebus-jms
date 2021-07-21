@@ -36,6 +36,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     private static final String CLIENT_ID_PROPERTY = "clientId";
     
     private static final int MaxCustomUserAgentLength = 128;
+    private final ServiceBusJmsConnectionFactorySettings settings;
     private volatile boolean initialized;
     private JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
@@ -44,7 +45,9 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     /**
      * Intended to be used by JNDI only. Users should not be actively calling this constructor to create a ServiceBusJmsConnectionFactory instance.
      */
-    public ServiceBusJmsConnectionFactory() { }
+    public ServiceBusJmsConnectionFactory() { 
+        this.settings = null;
+    }
     
     /**
      * Create a ServiceBusJmsConnectionFactory using a given Azure ServiceBus connection string.
@@ -64,6 +67,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
      */
     public ServiceBusJmsConnectionFactory(ConnectionStringBuilder connectionStringBuilder, ServiceBusJmsConnectionFactorySettings settings) {
         this.builder = connectionStringBuilder;
+        this.settings = settings;
         this.initialize(connectionStringBuilder.getSasKeyName(),
                 connectionStringBuilder.getSasKey(),
                 connectionStringBuilder.getEndpoint().getHost(),
@@ -78,6 +82,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
      * @param settings The options used for this ConnectionFactory. Null can be used as default.
      */
     public ServiceBusJmsConnectionFactory(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
+        this.settings = settings;
         this.initialize(sasKeyName, sasKey, host, settings);
     }
     
@@ -157,6 +162,13 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
      */
     public void setClientId(String clientId) {
         this.factory.setClientID(clientId);
+    }
+    
+    /**
+     * @return The ServiceBusConnectionFactorySettings used to initialize this ServiceBusJmsConnectionFactory
+     */
+    public ServiceBusJmsConnectionFactorySettings getSettings() {
+        return this.settings;
     }
     
     @Override
