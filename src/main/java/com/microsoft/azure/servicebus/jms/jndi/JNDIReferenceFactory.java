@@ -29,7 +29,7 @@ public class JNDIReferenceFactory implements ObjectFactory {
             Class<?> theClass = loadClass(this, reference.getClassName());
             if (JNDIStorable.class.isAssignableFrom(theClass)) {
                 JNDIStorable store = (JNDIStorable) theClass.getDeclaredConstructor().newInstance();
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 for (Enumeration<RefAddr> iter = reference.getAll(); iter.hasMoreElements();) {
                     StringRefAddr addr = (StringRefAddr) iter.nextElement();
                     properties.put(addr.getType(), (addr.getContent() == null) ? "" : addr.getContent().toString());
