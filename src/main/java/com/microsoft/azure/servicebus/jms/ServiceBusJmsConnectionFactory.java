@@ -87,7 +87,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     }
     
     private void initialize(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
-        if (sasKeyName == null || sasKeyName == null || host == null) {
+        if (sasKeyName == null || host == null) {
             throw new IllegalArgumentException("SAS Key, SAS KeyName and the host cannot be null for a ServiceBus connection factory.");
         }
         
