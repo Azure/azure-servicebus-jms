@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.microsoft.azure</groupId>
 	<artifactId>azure-servicebus-jms</artifactId>
-	<version>0.0.9</version>
+	<version>1.0.0</version>
 	<name>azure-servicebus-jms</name>
 	<description>ServiceBus ConnectionFactory for JMS users</description>
 
@@ -83,6 +83,17 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.36</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+		    <groupId>com.azure</groupId>
+		    <artifactId>azure-identity</artifactId>
+		    <version>1.6.0</version>
 		</dependency>
 	</dependencies>
 </project>
