@@ -25,6 +25,7 @@ import javax.jms.TopicConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionExtensions;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
+import com.azure.core.credential.TokenCredential;
 import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
@@ -36,31 +37,23 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     private static final String CONNECTION_STRING_PROPERTY = "connectionString";
     private static final String CLIENT_ID_PROPERTY = "clientId";
     private static final int MaxCustomUserAgentLength = 128;
-    
-    
+
     // AAD TOKEN properties
-    private static final String AAD_TOKEN_USERNAME = "$jwt";
-    private boolean isMsi = false; 
-    private boolean isClientSecretCredential = false;
-    private boolean isDefaultAzureCredential = false;
-    private String tenantId; 
-    private String aadClientId; 
-    private String clientSecret;
-    private String aadToken;
+ // AAD TOKEN properties
+    private final String AAD_TOKEN_USERNAME = "$jwt";
+    private boolean isAadAuthentication = false; 
+    private AadAuthentication aadAuthentication;
     
     //SAS
     private String sasKey;
     private String sasKeyName;
    
     //Common properties
-    private boolean isAadAuthentication = false;
     private final ServiceBusJmsConnectionFactorySettings settings;
     private volatile boolean initialized;
     private JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
     private String customUserAgent;
-    
-    
     
     /**
      * Intended to be used by JNDI only. Users should not be actively calling this constructor to create a ServiceBusJmsConnectionFactory instance.
@@ -110,54 +103,33 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     }
     
     /**
-     * Create a ServiceBusJmsConnectionFactory using shared access key and host name.
-     * @param tenantId Tenent id 
-     * @param clientId Client id.
-     * @param clientSecret Client secret
+     * Create a ServiceBusJmsConnectionFactory using a credential and host name.
+     * @param Credential. A token provider credential that will be use to acquire an aad token. For default credential ether pass null or DefaultAzure
      * @param host The host name of the ServiceBus namespace. Example: your-namespace-name.servicebus.windows.net
      * @param settings The options used for this ConnectionFactory. Null can be used as default.
      * @throws Exception 
      */
-    public ServiceBusJmsConnectionFactory(String tenantId, String aadClientId, String clientSecret, String host, ServiceBusJmsConnectionFactorySettings settings){
-        this.settings = settings;
-        this.isAadAuthentication = true;
-        this.tenantId = tenantId;
-        this.aadClientId = aadClientId;
-        this.clientSecret = clientSecret;
-        this.isClientSecretCredential = true;
-       
-        this.aadToken = new AadAuthentication(this.tenantId, this.aadClientId, this.clientSecret).GetclientSecretCredentialToken();
-        this.initialize(AAD_TOKEN_USERNAME,this.aadToken, host, settings);
+    public ServiceBusJmsConnectionFactory(TokenCredential credential, String host, ServiceBusJmsConnectionFactorySettings settings){
+    	this.settings = settings;
+    	this.isAadAuthentication =true;
+    	if(credential == null) {
+    		this.aadAuthentication = new AadAuthentication();
+    	}
+    	else {
+    		this.aadAuthentication = new AadAuthentication(credential);
+        }
+        this.initialize(AAD_TOKEN_USERNAME, this.aadAuthentication.getAadToken(), host, settings);
     }
     
-    public ServiceBusJmsConnectionFactory(ServiceBusJmsConnectionFactorySettings settings, String host, String aadClientId, String tenantId) {
-        this.settings = settings;
-        this.isAadAuthentication = true;
-        this.aadClientId = aadClientId;
-        this.isMsi = true;
-        this.aadToken = new AadAuthentication(this.aadClientId).GetMsiAndDefaultCredentialToken();
-  
-        this.initialize(AAD_TOKEN_USERNAME, this.aadToken, host, settings);
-    }
-    
-    public ServiceBusJmsConnectionFactory(ServiceBusJmsConnectionFactorySettings settings, String host) {
-        this.settings = settings;
-        this.isAadAuthentication = true;
-        
-        this.isDefaultAzureCredential = true;
-        this.aadToken = new AadAuthentication().GetMsiAndDefaultCredentialToken();
-  
-        this.initialize(AAD_TOKEN_USERNAME,this.aadToken, host, settings);
-    }
     
     private void initialize(String userName, String password, String host, ServiceBusJmsConnectionFactorySettings settings) {
     	if (userName == null || password == null || host == null) {
-            throw new IllegalArgumentException("UserName, password and the host cannot be null for a ServiceBus connection factory.");
+            throw new IllegalArgumentException("authentication settings and host cannot be null for a ServiceBus connection factory.");
         }
         if (settings == null) {
             settings = new ServiceBusJmsConnectionFactorySettings();
         }
-        
+        //Todo: is connection builder needed for aad
         if (this.builder == null) {
             try {
                 this.builder = new ConnectionStringBuilder(new URI(host), null, userName, password);
@@ -197,33 +169,11 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
             properties.put("user-agent", userAgent.toString());
 
             return properties;
-        });
-        
-        
-		if (isAadAuthentication) {
-			
-			this.factory.setExtension(JmsConnectionExtensions.USERNAME_OVERRIDE.toString(), (connection, uri) -> {
-				return AAD_TOKEN_USERNAME;
-		    });
-		            
-			this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {
-				if (this.aadToken == null) {
-					if(isMsi)
-					{
-					 this.aadToken = new AadAuthentication(this.aadClientId).GetMsiAndDefaultCredentialToken();
-					}
-					else if(isDefaultAzureCredential){
-						this.aadToken = new AadAuthentication().GetMsiAndDefaultCredentialToken();
-					}
-					else if(isClientSecretCredential) {
-						this.aadToken = new AadAuthentication(this.tenantId, this.aadClientId, this.clientSecret).GetclientSecretCredentialToken();
-					}						
-				}
-				
-				return this.aadToken;
-		    });
+        });  
+       
+        if (isAadAuthentication) {
+            this.setExtensionsForAad();
 		}
-         
 
         Supplier<ProxyHandler> proxyHandlerSupplier = settings.getProxyHandlerSupplier();
         if (proxyHandlerSupplier != null) {
@@ -424,5 +374,17 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         if (!this.initialized) {
             throw new RuntimeException("This ServiceBusJmsConnectionFactory object is not initialized with the proper parameters.");
         }
+    }
+    
+      void setExtensionsForAad() {
+    	this.factory.setExtension(JmsConnectionExtensions.USERNAME_OVERRIDE.toString(), (connection, uri) -> {
+    		return AAD_TOKEN_USERNAME;
+    	});
+            
+		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {
+			
+			return this.aadAuthentication.getAadToken();
+	    });
+
     }
 }

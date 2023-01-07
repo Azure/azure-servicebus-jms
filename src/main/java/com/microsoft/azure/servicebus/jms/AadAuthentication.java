@@ -1,70 +1,40 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 package com.microsoft.azure.servicebus.jms;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.azure.core.credential.AccessToken;
+import com.azure.core.credential.TokenCredential;
 import com.azure.core.credential.TokenRequestContext;
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
-import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 
 public class AadAuthentication {
 
-    private static final String AUDIENCE = "https://servicebus.azure.net/.default";
-    private static final String AUTHORITY = "https://login.microsoftonline.com/%s/";
-	DefaultAzureCredential credential;
-	ClientSecretCredential clientSecretCredential;
-	
-	public AadAuthentication()
-	{
-		credential = new DefaultAzureCredentialBuilder()
-				  .build();
+    private final String AUDIENCE = "https://servicebus.azure.net/.default";
+    private TokenCredential credential;
+    private AccessToken currentAccessToken;
+    
+	public AadAuthentication() {
+		this(new DefaultAzureCredentialBuilder().build());
+	}
+
+	public AadAuthentication(TokenCredential credential) {
+		this.credential = credential;
+		this.currentAccessToken = this.generateAccessToken();
+	}
+
+	private AccessToken generateAccessToken() {
+		return this.credential.getToken(new TokenRequestContext().addScopes(AUDIENCE)).block();
+	}
 		
+	public String getAadToken() {
+		//Generate new token if expire
+		if (this.currentAccessToken.isExpired()) {
+			synchronized(this.currentAccessToken) {
+				this.currentAccessToken = this.generateAccessToken(); 
+			}
+		}
 		
-	}
-
-	public AadAuthentication(String clientId) {
-		credential = new DefaultAzureCredentialBuilder()
-				  .managedIdentityClientId(clientId)
-				  .build();
-	}
-	
-	public AadAuthentication(String tenantId, String clientId, String clientSecret){
-		String authority =  String.format(AUTHORITY, tenantId);
-		clientSecretCredential = new ClientSecretCredentialBuilder()
-	    		.tenantId(tenantId)
-	    		.clientId(clientId)
-	    		.clientSecret(clientSecret)
-	    		.authorityHost(authority)	    		
-	    		.build();
-	}
-	
-	public String GetMsiAndDefaultCredentialToken() {
-    	List<String> scopes = new ArrayList<String>();
-	    scopes.add(AUDIENCE);
-
-        TokenRequestContext cxt = new TokenRequestContext();
- 	    cxt.setScopes(scopes);
- 	   
- 	    String token = credential
- 	    		.getToken(cxt).block()
- 	            .getToken();
- 	   
- 	    return token;
-	}
-	
-	public String GetclientSecretCredentialToken() {
-    	List<String> scopes = new ArrayList<String>();
-	    scopes.add(AUDIENCE);
-
-        TokenRequestContext cxt = new TokenRequestContext();
-        cxt.setScopes(scopes);
- 	   
- 	    String token = clientSecretCredential
- 	    		.getToken(cxt).block()
- 	            .getToken();
- 	   
- 	    return token; 
+		return this.currentAccessToken.getToken();
 	}
 }
