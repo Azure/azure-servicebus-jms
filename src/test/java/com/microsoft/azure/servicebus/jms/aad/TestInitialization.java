@@ -51,7 +51,7 @@ public class TestInitialization
 	// Topic only
 	public String subscriberName;
 	
-	public TestInitialization () 
+	public TestInitialization() 
 	{
 		// Aad credential
         this.TENANT_ID =  System.getenv("AZURE_TENANT_ID");
@@ -60,7 +60,7 @@ public class TestInitialization
         this.CLIENT_SECRET = System.getenv("AZURE_CLIENT_SECRET");
 	}
 	
-	public TestInitialization (String entityName) 
+	public TestInitialization(String entityName) 
 	{
 		// Aad credential
         this.TENANT_ID =  System.getenv("AZURE_TENANT_ID");
@@ -77,7 +77,7 @@ public class TestInitialization
         this.entityName = entityName;
 	}
 	
-    public void  initializeWithSas(String entityType)
+    public void initializeWithSas(String entityType)
     {
     	this.factory = new ServiceBusJmsConnectionFactory(this.CONNECTION_STRING, this.SETTINGS);
 		System.out.println("Factory was created.....");
@@ -86,7 +86,7 @@ public class TestInitialization
         System.out.println("Context was created.....");
 	}
     
-    public void  initializeWithAad(String entityType, TokenCredential credential)
+    public void initializeWithAad(String entityType, TokenCredential credential)
     {
     	this.factory = new ServiceBusJmsConnectionFactory(credential, this.HOST, this.SETTINGS);
 		System.out.println("Factory was created.....");
