@@ -16,7 +16,7 @@ public class QueueTests {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCs");
 		this.initialization.startCS("Queue");
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
         this.initialization.producer = initialization.jmsContext.createProducer();
@@ -42,10 +42,10 @@ public class QueueTests {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCs");
 		this.initialization.startCS("Queue");
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 	    
 	    try {
@@ -68,10 +68,10 @@ public class QueueTests {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCs");
 		this.initialization.startCS("Queue");
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 	    
 	    //send message

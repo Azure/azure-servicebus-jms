@@ -13,7 +13,7 @@ public class TopicTests {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCsTopic");
 		this.initialization.startCS("Topic");
-		this.initialization.entitiy = initialization.jmsContext.createTopic(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createTopic(initialization.entityName);
         System.out.println("Topic was created.......");
         
         this.initialization.producer = initialization.jmsContext.createProducer();
@@ -44,7 +44,7 @@ public class TopicTests {
 		this.initialization.jmsContext.setClientID("connectionStringId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
 		this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");

@@ -2,6 +2,8 @@ package com.microsoft.azure.servicebus.jms.aad;
 
 import org.junit.Test;
 
+import com.azure.identity.DefaultAzureCredentialBuilder;
+
 public class QueueTest {
 	TestInitialization initialization;
 	
@@ -12,13 +14,13 @@ public class QueueTest {
 		this.initialization = new TestInitialization("endToEndSecretCredentialQueue");
 		
 		this.initialization.startAad("Queue", this.initialization.GetSecretCredential());
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 	    
-	    //send message
+	    //Send message
 	    try {
 	    	this.initialization.send(10);
 	    	this.initialization.received(10);
@@ -41,13 +43,13 @@ public class QueueTest {
 		this.initialization = new TestInitialization("endToEndMsiQueue");
 		
 		this.initialization.startAad("Queue", this.initialization.GetMsiCredential());
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 	    
-	    //send message
+	    //Send message
 	    try {
 	    	this.initialization.send(10);
 	    	this.initialization.received(10);
@@ -69,11 +71,11 @@ public class QueueTest {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndDefaultAzureCredentialQueue");
 		
-		this.initialization.startAad("Queue", null);
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.startAad("Queue", new DefaultAzureCredentialBuilder().build());
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 
 	    try {
@@ -103,12 +105,12 @@ public class QueueTest {
 		this.initialization = new TestInitialization("PortalSecretQueue");
 		
 		this.initialization.startAad("Queue", this.initialization.GetSecretCredential());
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 	    
-	    //send message
+	    //Send message
 	    try {
 	    	this.initialization.send(10);
 	    	this.initialization.received(10);
@@ -131,9 +133,9 @@ public class QueueTest {
 		this.initialization = new TestInitialization("PortalMsiQueue");
 		
 		this.initialization.startAad("Queue", this.initialization.GetMsiCredential());
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 	    
 	    //send message
@@ -154,14 +156,14 @@ public class QueueTest {
 	
 	@Test
 	public void portalE2EQueueTestWithDefaultAzure()throws Exception {
-		System.out.println("\nTest send and received queue portal test using DefaultAzureCredential");
+		System.out.println("\nTest send and received queue portal test using Default Azure Credential");
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalDefaultAzureQueue");
 		
-		this.initialization.startAad("Queue", null);
-		this.initialization.entitiy = initialization.jmsContext.createQueue(initialization.entityName);
+		this.initialization.startAad("Queue", new DefaultAzureCredentialBuilder().build());
+		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         
-		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entitiy);
+		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);
 	    System.out.println("Consumer was created.....");
 
 	    try {

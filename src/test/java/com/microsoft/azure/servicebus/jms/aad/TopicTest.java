@@ -3,6 +3,8 @@ package com.microsoft.azure.servicebus.jms.aad;
 
 import org.junit.Test;
 
+import com.azure.identity.DefaultAzureCredentialBuilder;
+
 public class TopicTest  {
 	
 	TestInitialization initialization;
@@ -17,7 +19,7 @@ public class TopicTest  {
 		this.initialization.jmsContext.setClientID("SecretCredentialId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
 		this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");
@@ -47,7 +49,7 @@ public class TopicTest  {
 		this.initialization.startAad("Topic", this.initialization.GetMsiCredential());
 		this.initialization.jmsContext.setClientID("MsiCredentialId");
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
 		this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");
@@ -74,11 +76,11 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndDefaultAzureCredentialTopic");
 		
-		this.initialization.startAad("Topic", null);
+		this.initialization.startAad("Topic", new DefaultAzureCredentialBuilder().build());
 		this.initialization.jmsContext.setClientID("DefaultAzureCredentialId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
         this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");
@@ -113,7 +115,7 @@ public class TopicTest  {
 		this.initialization.startAad("Topic", this.initialization.GetSecretCredential());
 		this.initialization.jmsContext.setClientID("PortalSecretId");
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
         this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");
@@ -144,7 +146,7 @@ public class TopicTest  {
 		this.initialization.jmsContext.setClientID("PortalMsiId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
         this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");
@@ -171,11 +173,11 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalDefaultAzureTopic");
 		
-		this.initialization.startAad("Topic", null);
+		this.initialization.startAad("Topic", new DefaultAzureCredentialBuilder().build());
 		this.initialization.jmsContext.setClientID("PortalDefaultAzureId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
-		this.initialization.entitiy = this.initialization.topic;
+		this.initialization.entity = this.initialization.topic;
         System.out.println("Topic was created.......");
         
         this.initialization.consumer = initialization.jmsContext.createDurableConsumer(initialization.topic, "subDefaultAzure");

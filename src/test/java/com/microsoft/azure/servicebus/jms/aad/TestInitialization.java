@@ -38,7 +38,7 @@ public class TestInitialization
 	public TextMessage receivedMsg;
 	public String HOST;
 	public String entityName;
-	public Destination entitiy;
+	public Destination entity;
 	public Topic topic;
 	public Queue queue;
 	public JMSContext jmsContext;
@@ -101,8 +101,8 @@ public class TestInitialization
         System.out.println("Producer was created.....");
 		
 		for(int i=0; i<numberOfMessage; i++) {
-			sendMsg = (TextMessage)jmsContext.createTextMessage("message " + i);
-			this.producer.send(entitiy, sendMsg);
+			sendMsg = (TextMessage)jmsContext.createTextMessage("Message " + i);
+			this.producer.send(entity, sendMsg);
 			System.out.println("Send message " + i);
 		}	
 	}
