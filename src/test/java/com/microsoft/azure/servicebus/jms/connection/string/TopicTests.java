@@ -1,4 +1,4 @@
-package com.microsoft.azure.servicebus.jms.connectionString;
+package com.microsoft.azure.servicebus.jms.connection.string;
 
 import org.junit.Test;
 import com.microsoft.azure.servicebus.jms.aad.TestInitialization;

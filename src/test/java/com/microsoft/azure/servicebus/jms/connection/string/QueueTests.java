@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
-package com.microsoft.azure.servicebus.jms.connectionString;
+package com.microsoft.azure.servicebus.jms.connection.string;
 
 import javax.jms.TextMessage;
 import org.junit.Test;
