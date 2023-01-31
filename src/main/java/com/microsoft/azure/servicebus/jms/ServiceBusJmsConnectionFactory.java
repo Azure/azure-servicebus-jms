@@ -81,7 +81,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.password = connectionStringBuilder.getSasKey();
         this.userName = connectionStringBuilder.getSasKeyName();
         this.host = connectionStringBuilder.getEndpoint().getHost();
-        this.initializeConnectionString();
+        this.initializeWithSas();
         
     }
     
@@ -97,7 +97,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.password = sasKey;
         this.userName = sasKeyName;
         this.host = host;
-        this.initializeConnectionString();
+        this.initializeWithSas();
     }
     
     /**
@@ -113,21 +113,21 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     	this.userName = AAD_TOKEN_USERNAME;
     	this.password = this.aadAuthentication.getAadToken();
     	this.host = host;	
-        this.initializeAdd();
+        this.initializeWithAdd();
     }
     
-    private void initializeAdd() {
+    private void initializeWithAdd() {
     	this.initialize(this.userName, this.password, this.host, this.settings);
     	this.setExtensionsForAad();
     	this.initialized = true;
     }
     
-    private void initializeConnectionString() {
+    private void initializeWithSas() {
 
     	this.initialize(this.userName, this.password, this.host, this.settings);
     	if (this.builder == null) {
             try {
-                this.builder = new ConnectionStringBuilder(new URI(host), null, userName, password);
+                this.builder = new ConnectionStringBuilder(new URI(host), null, this.userName, this.password);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -323,7 +323,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.password = this.builder.getSasKey();
         this.userName = this.builder.getSasKeyName(); 
         this.host = this.builder.getEndpoint().getHost();
-        this.initializeConnectionString();
+        this.initializeWithSas();
     
         // Need to wait until the inner factory is initialized in order to set the clientId
         if (!StringUtil.isNullOrEmpty(clientId)) {
@@ -377,13 +377,12 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         }
     }
     
-    void setExtensionsForAad() {
+    private void setExtensionsForAad() {
     	this.factory.setExtension(JmsConnectionExtensions.USERNAME_OVERRIDE.toString(), (connection, uri) -> {
     		return AAD_TOKEN_USERNAME;
     	});
             
-		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {
-			
+		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {	
 			return this.aadAuthentication.getAadToken();
 	    });
     }

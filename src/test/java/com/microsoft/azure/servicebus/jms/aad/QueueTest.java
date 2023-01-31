@@ -1,7 +1,6 @@
 package com.microsoft.azure.servicebus.jms.aad;
 
 import org.junit.Test;
-
 import com.azure.identity.DefaultAzureCredentialBuilder;
 
 public class QueueTest {
@@ -13,7 +12,7 @@ public class QueueTest {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndSecretCredentialQueue");
 		
-		this.initialization.startAad("Queue", this.initialization.GetSecretCredential());
+		this.initialization.startAad("Queue", this.initialization.GetClientSecretCredential());
 		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
@@ -104,7 +103,7 @@ public class QueueTest {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalSecretQueue");
 		
-		this.initialization.startAad("Queue", this.initialization.GetSecretCredential());
+		this.initialization.startAad("Queue", this.initialization.GetClientSecretCredential());
 		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         
 		this.initialization.consumer = initialization.jmsContext.createConsumer(initialization.entity);

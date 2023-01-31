@@ -15,7 +15,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndSecretCredentialTopic");
 		
-		this.initialization.startAad("Topic", this.initialization.GetSecretCredential());
+		this.initialization.startAad("Topic", this.initialization.GetClientSecretCredential());
 		this.initialization.jmsContext.setClientID("SecretCredentialId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
@@ -112,7 +112,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalSecretTopic");
 		
-		this.initialization.startAad("Topic", this.initialization.GetSecretCredential());
+		this.initialization.startAad("Topic", this.initialization.GetClientSecretCredential());
 		this.initialization.jmsContext.setClientID("PortalSecretId");
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
 		this.initialization.entity = this.initialization.topic;

@@ -15,7 +15,7 @@ public class AadAuthentication {
 
     /**
      * Create an AadAuthentication using a token credential.
-     * @param credential can be of type Azure Default Credential, Msi credential and secret credential.
+     * @param credential. Can be of type Azure Default Credential, Msi credential or secret credential.
      */
 	public AadAuthentication(TokenCredential credential) {
 		this.credential = credential;
@@ -23,7 +23,7 @@ public class AadAuthentication {
 	}
 	
 	/**
-     * Checks current token is valid and generates a new token if is not valid 
+     * Checks if current token is valid and generates a new token if is not valid 
      * @return returns a valid token. 
      */
 	public String getAadToken() {

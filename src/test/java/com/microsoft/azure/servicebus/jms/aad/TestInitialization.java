@@ -118,7 +118,7 @@ public class TestInitialization
 		}    	
     }
 
-    public TokenCredential GetSecretCredential()
+    public TokenCredential GetClientSecretCredential()
 	{
 		String authority =  String.format(this.AUTHORITY, this.TENANT_ID);	
 		List<String> scopes = new ArrayList<String>();
