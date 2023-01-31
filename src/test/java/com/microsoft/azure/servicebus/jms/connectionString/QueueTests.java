@@ -15,7 +15,7 @@ public class QueueTests {
 		System.out.println("\nTest send and creating queue on the app using connection string");
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCs");
-		this.initialization.startCS("Queue");
+		this.initialization.initializeWithSas("Queue");
 		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
@@ -41,7 +41,7 @@ public class QueueTests {
 		System.out.println("\nTest send and creating queue on the app using connection string");
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCs");
-		this.initialization.startCS("Queue");
+		this.initialization.initializeWithSas("Queue");
 		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         
@@ -67,7 +67,7 @@ public class QueueTests {
 		System.out.println("\nTest send and creating queue on the app using connection string");
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCs");
-		this.initialization.startCS("Queue");
+		this.initialization.initializeWithSas("Queue");
 		this.initialization.entity = initialization.jmsContext.createQueue(initialization.entityName);
         System.out.println("Queue was created.......");
         

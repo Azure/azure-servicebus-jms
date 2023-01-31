@@ -15,7 +15,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndSecretCredentialTopic");
 		
-		this.initialization.startAad("Topic", this.initialization.GetClientSecretCredential());
+		this.initialization.initializeWithAad("Topic", this.initialization.GetClientSecretCredential());
 		this.initialization.jmsContext.setClientID("SecretCredentialId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
@@ -46,7 +46,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndMsiTopic");
 		
-		this.initialization.startAad("Topic", this.initialization.GetMsiCredential());
+		this.initialization.initializeWithAad("Topic", this.initialization.GetMsiCredential());
 		this.initialization.jmsContext.setClientID("MsiCredentialId");
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
 		this.initialization.entity = this.initialization.topic;
@@ -76,7 +76,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndDefaultAzureCredentialTopic");
 		
-		this.initialization.startAad("Topic", new DefaultAzureCredentialBuilder().build());
+		this.initialization.initializeWithAad("Topic", new DefaultAzureCredentialBuilder().build());
 		this.initialization.jmsContext.setClientID("DefaultAzureCredentialId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
@@ -112,7 +112,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalSecretTopic");
 		
-		this.initialization.startAad("Topic", this.initialization.GetClientSecretCredential());
+		this.initialization.initializeWithAad("Topic", this.initialization.GetClientSecretCredential());
 		this.initialization.jmsContext.setClientID("PortalSecretId");
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
 		this.initialization.entity = this.initialization.topic;
@@ -142,7 +142,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalMsiTopic");
 		
-		this.initialization.startAad("Topic", this.initialization.GetMsiCredential());
+		this.initialization.initializeWithAad("Topic", this.initialization.GetMsiCredential());
 		this.initialization.jmsContext.setClientID("PortalMsiId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
@@ -173,7 +173,7 @@ public class TopicTest  {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("PortalDefaultAzureTopic");
 		
-		this.initialization.startAad("Topic", new DefaultAzureCredentialBuilder().build());
+		this.initialization.initializeWithAad("Topic", new DefaultAzureCredentialBuilder().build());
 		this.initialization.jmsContext.setClientID("PortalDefaultAzureId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);

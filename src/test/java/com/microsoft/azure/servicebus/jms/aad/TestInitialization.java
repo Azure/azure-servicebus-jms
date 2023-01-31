@@ -77,7 +77,7 @@ public class TestInitialization
         this.entityName = entityName;
 	}
 	
-    public void startCS(String entityType)
+    public void  initializeWithSas(String entityType)
     {
     	this.factory = new ServiceBusJmsConnectionFactory(this.CONNECTION_STRING, this.SETTINGS);
 		System.out.println("Factory was created.....");
@@ -86,7 +86,7 @@ public class TestInitialization
         System.out.println("Context was created.....");
 	}
     
-    public void startAad(String entityType, TokenCredential credential)
+    public void  initializeWithAad(String entityType, TokenCredential credential)
     {
     	this.factory = new ServiceBusJmsConnectionFactory(credential, this.HOST, this.SETTINGS);
 		System.out.println("Factory was created.....");

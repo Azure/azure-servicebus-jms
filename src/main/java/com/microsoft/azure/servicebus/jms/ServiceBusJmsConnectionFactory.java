@@ -113,10 +113,10 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     	this.userName = AAD_TOKEN_USERNAME;
     	this.password = this.aadAuthentication.getAadToken();
     	this.host = host;	
-        this.initializeWithAdd();
+        this.initializeWithAad();
     }
     
-    private void initializeWithAdd() {
+    private void initializeWithAad() {
     	this.initialize(this.userName, this.password, this.host, this.settings);
     	this.setExtensionsForAad();
     	this.initialized = true;

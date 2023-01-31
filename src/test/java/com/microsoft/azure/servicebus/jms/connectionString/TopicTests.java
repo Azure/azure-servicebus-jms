@@ -12,7 +12,7 @@ public class TopicTests {
 		System.out.println("\nTest send and creating queue on the app using connection string");
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("sendOnlyCsTopic");
-		this.initialization.startCS("Topic");
+		this.initialization.initializeWithSas("Topic");
 		this.initialization.entity = initialization.jmsContext.createTopic(initialization.entityName);
         System.out.println("Topic was created.......");
         
@@ -40,7 +40,7 @@ public class TopicTests {
 		System.out.println("---------------------------------------------------------");
 		this.initialization = new TestInitialization("endToEndTopic");
 		
-		this.initialization.startCS("Topic");
+		this.initialization.initializeWithSas("Topic");
 		this.initialization.jmsContext.setClientID("connectionStringId");
 		
 		this.initialization.topic = initialization.jmsContext.createTopic(initialization.entityName);
