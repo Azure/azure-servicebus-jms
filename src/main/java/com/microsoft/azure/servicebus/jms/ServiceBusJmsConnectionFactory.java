@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -24,6 +25,7 @@ import javax.jms.TopicConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionExtensions;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
+import com.azure.core.credential.TokenCredential;
 import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
@@ -34,13 +36,21 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     // JNDI property names
     private static final String CONNECTION_STRING_PROPERTY = "connectionString";
     private static final String CLIENT_ID_PROPERTY = "clientId";
-    
     private static final int MaxCustomUserAgentLength = 128;
+
+    // AAD TOKEN properties
+    private final String AAD_TOKEN_USERNAME = "$jwt";
+    private AadAuthentication aadAuthentication;
+   
+    //Common properties
     private final ServiceBusJmsConnectionFactorySettings settings;
     private volatile boolean initialized;
     private JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
     private String customUserAgent;
+    private String userName;
+    private String password;
+    private String host;
     
     /**
      * Intended to be used by JNDI only. Users should not be actively calling this constructor to create a ServiceBusJmsConnectionFactory instance.
@@ -68,10 +78,11 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     public ServiceBusJmsConnectionFactory(ConnectionStringBuilder connectionStringBuilder, ServiceBusJmsConnectionFactorySettings settings) {
         this.builder = connectionStringBuilder;
         this.settings = settings;
-        this.initialize(connectionStringBuilder.getSasKeyName(),
-                connectionStringBuilder.getSasKey(),
-                connectionStringBuilder.getEndpoint().getHost(),
-                settings);
+        this.password = connectionStringBuilder.getSasKey();
+        this.userName = connectionStringBuilder.getSasKeyName();
+        this.host = connectionStringBuilder.getEndpoint().getHost();
+        this.initializeWithSas();
+        
     }
     
     /**
@@ -83,26 +94,56 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
      */
     public ServiceBusJmsConnectionFactory(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
         this.settings = settings;
-        this.initialize(sasKeyName, sasKey, host, settings);
+        this.password = sasKey;
+        this.userName = sasKeyName;
+        this.host = host;
+        this.initializeWithSas();
     }
     
-    private void initialize(String sasKeyName, String sasKey, String host, ServiceBusJmsConnectionFactorySettings settings) {
-        if (sasKeyName == null || sasKeyName == null || host == null) {
-            throw new IllegalArgumentException("SAS Key, SAS KeyName and the host cannot be null for a ServiceBus connection factory.");
-        }
-        
-        if (settings == null) {
-            settings = new ServiceBusJmsConnectionFactorySettings();
-        }
-        
-        if (this.builder == null) {
+    /**
+     * Create a ServiceBusJmsConnectionFactory using a credential and host name.
+     * @param Credential. A token provider credential that will be used to acquire an aad token.
+     * @param host. The host name of the ServiceBus namespace. Example: your-namespace-name.servicebus.windows.net
+     * @param settings The options used for this ConnectionFactory. Null can be used as default.
+     * @throws Exception 
+     */
+    public ServiceBusJmsConnectionFactory(TokenCredential credential, String host, ServiceBusJmsConnectionFactorySettings settings){
+    	this.settings = settings;
+    	this.aadAuthentication = new AadAuthentication(credential);
+    	this.userName = AAD_TOKEN_USERNAME;
+    	this.password = this.aadAuthentication.getAadToken();
+    	this.host = host;	
+        this.initializeWithAad();
+    }
+    
+    private void initializeWithAad() {
+    	this.initialize(this.userName, this.password, this.host, this.settings);
+    	this.setExtensionsForAad();
+    	this.initialized = true;
+    }
+    
+    private void initializeWithSas() {
+
+    	this.initialize(this.userName, this.password, this.host, this.settings);
+    	if (this.builder == null) {
             try {
-                this.builder = new ConnectionStringBuilder(new URI(host), null, sasKeyName, sasKey);
+                this.builder = new ConnectionStringBuilder(new URI(host), null, this.userName, this.password);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         }
-        
+    	
+    	this.initialized = true;
+    }
+    
+    private void initialize(String userName, String password, String host, ServiceBusJmsConnectionFactorySettings settings) {
+    	if (userName == null || password == null || host == null) {
+            throw new IllegalArgumentException("Authentication settings and host cannot be null for a Service Bus connection factory.");
+        }
+        if (settings == null) {
+            settings = new ServiceBusJmsConnectionFactorySettings();
+        }
+                
         String destinationUri = "amqps://" + host;
         if (settings.shouldReconnect()) {
             destinationUri = getReconnectUri(destinationUri, settings);
@@ -110,7 +151,8 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         
         String serviceBusQuery = settings.getServiceBusQuery();
         destinationUri += serviceBusQuery;
-        this.factory = new JmsConnectionFactory(sasKeyName, sasKey, destinationUri);
+        this.factory = new JmsConnectionFactory(userName, password, destinationUri);
+        
         this.factory.setExtension(JmsConnectionExtensions.AMQP_OPEN_PROPERTIES.toString(), (connection, uri) -> {
             Map<String, Object> properties = new HashMap<>();
             properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
@@ -133,7 +175,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
             properties.put("user-agent", userAgent.toString());
 
             return properties;
-        });
+        });  
 
         Supplier<ProxyHandler> proxyHandlerSupplier = settings.getProxyHandlerSupplier();
         if (proxyHandlerSupplier != null) {
@@ -141,8 +183,6 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
                 return proxyHandlerSupplier;
             });
         }
-        
-        this.initialized = true;
     }
     
     public ConnectionStringBuilder getConnectionStringBuilder() {
@@ -280,7 +320,10 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         
         this.checkRequiredProperty(CONNECTION_STRING_PROPERTY, connectionString);
         this.builder = new ConnectionStringBuilder(connectionString);
-        this.initialize(this.builder.getSasKeyName(), this.builder.getSasKey(), this.builder.getEndpoint().getHost(), null);
+        this.password = this.builder.getSasKey();
+        this.userName = this.builder.getSasKeyName(); 
+        this.host = this.builder.getEndpoint().getHost();
+        this.initializeWithSas();
     
         // Need to wait until the inner factory is initialized in order to set the clientId
         if (!StringUtil.isNullOrEmpty(clientId)) {
@@ -332,5 +375,15 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         if (!this.initialized) {
             throw new RuntimeException("This ServiceBusJmsConnectionFactory object is not initialized with the proper parameters.");
         }
+    }
+    
+    private void setExtensionsForAad() {
+    	this.factory.setExtension(JmsConnectionExtensions.USERNAME_OVERRIDE.toString(), (connection, uri) -> {
+    		return AAD_TOKEN_USERNAME;
+    	});
+            
+		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {	
+			return this.aadAuthentication.getAadToken();
+	    });
     }
 }
