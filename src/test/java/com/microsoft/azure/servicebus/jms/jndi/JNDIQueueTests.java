@@ -27,7 +27,7 @@ import org.junit.Test;
 
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsQueueConnectionFactory;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 
 public class JNDIQueueTests {
     ServiceBusJmsConnectionFactory sbConnectionFactory;

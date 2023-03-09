@@ -9,9 +9,10 @@ import javax.jms.Connection;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+
 
 public class ConfigurationOptionsTest {
     ConnectionStringBuilder connectionStringBuilder;

@@ -7,8 +7,6 @@ import javax.jms.JMSException;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
-
 public class ServiceBusJmsQueueConnectionFactory extends ServiceBusJmsConnectionFactory implements QueueConnectionFactory {
 
     public ServiceBusJmsQueueConnectionFactory(String connectionString, ServiceBusJmsConnectionFactorySettings settings) {

@@ -64,11 +64,6 @@
 	<!-- JMS -->
 	<dependencies>
 		<dependency>
-			<groupId>com.microsoft.azure</groupId>
-			<artifactId>azure-servicebus</artifactId>
-			<version>3.6.4</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.qpid</groupId>
 			<artifactId>qpid-jms-client</artifactId>
 			<version>0.53.0</version>

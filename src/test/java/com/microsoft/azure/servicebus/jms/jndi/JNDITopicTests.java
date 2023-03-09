@@ -26,7 +26,7 @@ import org.junit.Test;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsTopic;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsTopicConnectionFactory;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 
 public class JNDITopicTests {
     ServiceBusJmsConnectionFactory sbConnectionFactory;
