@@ -154,7 +154,7 @@ public class ConnectionStringBuilder {
      * Creates a new instance from namespace, entity path and already generated SAS token.
      * @param namespaceName Namespace name (dns suffix - ex: .servicebus.windows.net is not required)
      * @param entityPath Entity path. For queue or topic, use name. For subscription use &lt;topicName&gt;/subscriptions/&lt;subscriptionName&gt;
-     * @param sharedAccessSingature Shared Access Signature already generated
+     * @param sharedAccesssignature Shared Access Signature already generated
      */
     public ConnectionStringBuilder(
             final String namespaceName,
@@ -183,7 +183,7 @@ public class ConnectionStringBuilder {
      * Creates a new instance from endpoint address of the namesapce, entity path and already generated SAS token.
      * @param endpointAddress namespace level endpoint. This needs to be in the format of scheme://fullyQualifiedServiceBusNamespaceEndpointName
      * @param entityPath Entity path. For queue or topic, use name. For subscription use &lt;topicName&gt;/subscriptions/&lt;subscriptionName&gt;
-     * @param sharedAccessSingature Shared Access Signature already generated
+     * @param sharedAccesssignature Shared Access Signature already generated
      */
     public ConnectionStringBuilder(
             final URI endpointAddress,

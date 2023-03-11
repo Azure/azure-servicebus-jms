@@ -3,7 +3,7 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-public final class ClientConstants {
+final class ClientConstants {
 	private ClientConstants() { }
 
 	static final String END_POINT_FORMAT = "amqps://%s.servicebus.windows.net";
