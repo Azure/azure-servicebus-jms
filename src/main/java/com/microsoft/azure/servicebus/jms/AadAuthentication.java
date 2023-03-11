@@ -6,7 +6,7 @@ package com.microsoft.azure.servicebus.jms;
 import com.azure.core.credential.TokenCredential;
 import com.azure.core.credential.TokenRequestContext;
 
-public class AadAuthentication {
+class AadAuthentication {
 
     private final String AUDIENCE = "https://servicebus.azure.net/.default";
     private TokenCredential credential;
