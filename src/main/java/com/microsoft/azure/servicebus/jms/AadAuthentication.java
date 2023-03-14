@@ -3,15 +3,13 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-import com.azure.core.credential.AccessToken;
 import com.azure.core.credential.TokenCredential;
 import com.azure.core.credential.TokenRequestContext;
 
-public class AadAuthentication {
+class AadAuthentication {
 
     private final String AUDIENCE = "https://servicebus.azure.net/.default";
     private TokenCredential credential;
-    private AccessToken currentAccessToken;
 
     /**
      * Create an AadAuthentication using a token credential.
@@ -19,25 +17,14 @@ public class AadAuthentication {
      */
 	public AadAuthentication(TokenCredential credential) {
 		this.credential = credential;
-		this.currentAccessToken = this.generateAccessToken();
 	}
 	
 	/**
-     * Checks if current token is valid and generates a new token if is not valid 
+     * Return a token based on the credential. No caching is necessary as Azure.Identity
+     * library caches the tokens in-memory by default.
      * @return returns a valid token. 
      */
 	public String getAadToken() {
-		//Generate new token if expire
-		if (this.currentAccessToken.isExpired()) {
-			synchronized(this.currentAccessToken) {
-				this.currentAccessToken = this.generateAccessToken(); 
-			}
-		}
-		
-		return this.currentAccessToken.getToken();
-	}
-	
-	private AccessToken generateAccessToken() {
-		return this.credential.getToken(new TokenRequestContext().addScopes(AUDIENCE)).block();
+		return this.credential.getToken(new TokenRequestContext().addScopes(AUDIENCE)).block().getToken();
 	}
 }
