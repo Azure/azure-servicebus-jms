@@ -3,6 +3,7 @@
 
 package com.microsoft.azure.servicebus.jms.jndi;
 
+
 import static org.junit.Assert.assertNotNull;
 
 import java.util.UUID;
@@ -13,7 +14,7 @@ import javax.naming.Reference;
 import org.junit.Test;
 
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 
 public class JNDIConnectionFactoryTests {
     

@@ -27,7 +27,6 @@ import org.apache.qpid.jms.JmsConnectionFactory;
 
 import com.azure.core.credential.TokenCredential;
 import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
 import io.netty.handler.proxy.ProxyHandler;
 import io.netty.util.internal.StringUtil;
