@@ -154,7 +154,7 @@ public class ConnectionStringBuilder {
      * Creates a new instance from namespace, entity path and already generated SAS token.
      * @param namespaceName Namespace name (dns suffix - ex: .servicebus.windows.net is not required)
      * @param entityPath Entity path. For queue or topic, use name. For subscription use &lt;topicName&gt;/subscriptions/&lt;subscriptionName&gt;
-     * @param sharedAccesssignature Shared Access Signature already generated
+     * @param sharedAccessSignature Shared Access Signature already generated
      */
     public ConnectionStringBuilder(
             final String namespaceName,
@@ -183,7 +183,7 @@ public class ConnectionStringBuilder {
      * Creates a new instance from endpoint address of the namesapce, entity path and already generated SAS token.
      * @param endpointAddress namespace level endpoint. This needs to be in the format of scheme://fullyQualifiedServiceBusNamespaceEndpointName
      * @param entityPath Entity path. For queue or topic, use name. For subscription use &lt;topicName&gt;/subscriptions/&lt;subscriptionName&gt;
-     * @param sharedAccesssignature Shared Access Signature already generated
+     * @param sharedAccessSignature Shared Access Signature already generated
      */
     public ConnectionStringBuilder(
             final URI endpointAddress,
@@ -297,6 +297,7 @@ public class ConnectionStringBuilder {
     }
 
     /**
+     * Returns the current authentication method.
      * @return Returns the authentication method.
      */
     public String getAuthentication() {
@@ -357,7 +358,10 @@ public class ConnectionStringBuilder {
         return this.connectionString;
     }
 
-    // Generates a string that is logged in traces. Excludes secrets
+    /**
+     * Returns a Connection string that can be logged in traces. Excludes secrets
+     * @return connection string
+     */
     public String toLoggableString() {
         StringBuilder connectionStringBuilder = new StringBuilder();
         if (this.endpoint != null) {

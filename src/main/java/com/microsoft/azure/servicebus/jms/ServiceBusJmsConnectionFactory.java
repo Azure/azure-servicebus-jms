@@ -101,10 +101,9 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     
     /**
      * Create a ServiceBusJmsConnectionFactory using a credential and host name.
-     * @param Credential. A token provider credential that will be used to acquire an aad token.
+     * @param credential. A token provider credential that will be used to acquire an aad token.
      * @param host. The host name of the ServiceBus namespace. Example: your-namespace-name.servicebus.windows.net
      * @param settings The options used for this ConnectionFactory. Null can be used as default.
-     * @throws Exception 
      */
     public ServiceBusJmsConnectionFactory(TokenCredential credential, String host, ServiceBusJmsConnectionFactorySettings settings){
     	this.settings = settings;
