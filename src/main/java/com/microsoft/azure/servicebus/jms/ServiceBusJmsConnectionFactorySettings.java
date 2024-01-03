@@ -12,11 +12,18 @@ import io.netty.handler.proxy.ProxyHandler;
 public class ServiceBusJmsConnectionFactorySettings {
     private static Map<String, String> DefaultConfigurationOptions = getDefaultConfigurationOptions();
     
+    static final String Vendor = "com.microsoft";
     // a flag added to the AMQP connection to indicate it's a ServiceBus ConnectionFactory client
-    static final String IsClientProvider = "com.microsoft:is-client-provider";
+    static final String IsClientProvider = Vendor + ":is-client-provider";
+    static final String QueueAutoDeleteOnIdleDurationInSecondsName = Vendor + ":queue-auto-delete-on-idle-duration-in-seconds";
+    static final String TopicAutoDeleteOnIdleDurationInSecondsName = Vendor + ":topic-auto-delete-on-idle-duration-in-seconds";
+    static final String SubscriberAutoDeleteOnIdleDurationInSecondsName = Vendor + ":subscriber-auto-delete-on-idle-duration-in-seconds";
     private long connectionIdleTimeoutMS;
     private Supplier<ProxyHandler> proxyHandlerSupplier;
     private boolean traceFrames;
+    private long queueAutoDeleteOnIdleDurationInSeconds;
+    private long topicAutoDeleteOnIdleDurationInSeconds;
+    private long subscriberAutoDeleteOnIdleDurationInSeconds;
     // QPID configuration options https://qpid.apache.org/releases/qpid-jms-0.53.0/docs/index.html
     // It could be AMQP, JMS or other configurations used in the connection URI.
     private Map<String, String> configurationOptions;
@@ -73,8 +80,53 @@ public class ServiceBusJmsConnectionFactorySettings {
     public void setTraceFrames(boolean traceFrames) {
         this.traceFrames = traceFrames;
     }
+
+    /**
+     * @return the queueAutoDeleteOnIdleDurationInSeconds setting configured for the factory
+     */
+	public long getQueueAutoDeleteOnIdleDurationInSeconds() {
+		return this.queueAutoDeleteOnIdleDurationInSeconds;
+	}
+
+	/**
+	 * @param queueAutoDeleteOnIdleDurationInSeconds - the autoDeleteOnIdleDurationInSeconds to be set for all queues created using this factory.
+	 * If different queues need different AutoDeleteOnIdleDuration settings, use different ServiceBusJmsConnectionFactory to create those queues.
+	 */
+	public void setQueueAutoDeleteOnIdleDurationInSeconds(long queueAutoDeleteOnIdleDurationInSeconds) {
+		this.queueAutoDeleteOnIdleDurationInSeconds = queueAutoDeleteOnIdleDurationInSeconds;
+	}
+
+	/**
+	 * @return the topicAutoDeleteOnIdleDurationInSeconds setting configured for the factory
+	 */
+	public long getTopicAutoDeleteOnIdleDurationInSeconds() {
+		return this.topicAutoDeleteOnIdleDurationInSeconds;
+	}
+
+	/**
+	 * @param topicAutoDeleteOnIdleDurationInSeconds - the autoDeleteOnIdleDurationInSeconds to be set for all topics created using this factory.
+	 * If different topics need different AutoDeleteOnIdleDuration settings, use different ServiceBusJmsConnectionFactory to create those topics.
+	 */
+	public void setTopicAutoDeleteOnIdleDurationInSeconds(long topicAutoDeleteOnIdleDurationInSeconds) {
+		this.topicAutoDeleteOnIdleDurationInSeconds = topicAutoDeleteOnIdleDurationInSeconds;
+	}
     
-    public Map<String, String> getConfigurationOptions() {
+	/**
+	 * @return the subscriberAutoDeleteOnIdleDurationInSeconds setting configured for the factory
+	 */
+	public long getSubscriberAutoDeleteOnIdleDurationInSeconds() {
+		return this.subscriberAutoDeleteOnIdleDurationInSeconds;
+	}
+
+	/**
+	 * @param subscriberAutoDeleteOnIdleDurationInSeconds - the autoDeleteOnIdleDurationInSeconds to be set for all subscriptions created using this factory.
+	 * If different subscriptions need different AutoDeleteOnIdleDuration settings, use different ServiceBusJmsConnectionFactory to create those subscriptions.
+	 */
+	public void setSubscriberAutoDeleteOnIdleDurationInSeconds(long subscriberAutoDeleteOnIdleDurationInSeconds) {
+		this.subscriberAutoDeleteOnIdleDurationInSeconds = subscriberAutoDeleteOnIdleDurationInSeconds;
+	}
+
+	public Map<String, String> getConfigurationOptions() {
         return this.configurationOptions;
     }
     
