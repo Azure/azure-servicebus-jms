@@ -81,11 +81,11 @@ public class ServiceBusJmsConnectionFactorySettings {
         this.traceFrames = traceFrames;
     }
 
-	/**
-	 * @return the queueAutoDeleteOnIdleDurationInSeconds setting configured for the factory
-	 */
+    /**
+     * @return the queueAutoDeleteOnIdleDurationInSeconds setting configured for the factory
+     */
 	public long getQueueAutoDeleteOnIdleDurationInSeconds() {
-		return queueAutoDeleteOnIdleDurationInSeconds;
+		return this.queueAutoDeleteOnIdleDurationInSeconds;
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class ServiceBusJmsConnectionFactorySettings {
 	 * @return the topicAutoDeleteOnIdleDurationInSeconds setting configured for the factory
 	 */
 	public long getTopicAutoDeleteOnIdleDurationInSeconds() {
-		return topicAutoDeleteOnIdleDurationInSeconds;
+		return this.topicAutoDeleteOnIdleDurationInSeconds;
 	}
 
 	/**
@@ -110,13 +110,12 @@ public class ServiceBusJmsConnectionFactorySettings {
 	public void setTopicAutoDeleteOnIdleDurationInSeconds(long topicAutoDeleteOnIdleDurationInSeconds) {
 		this.topicAutoDeleteOnIdleDurationInSeconds = topicAutoDeleteOnIdleDurationInSeconds;
 	}
-
     
-    /**
+	/**
 	 * @return the subscriberAutoDeleteOnIdleDurationInSeconds setting configured for the factory
 	 */
 	public long getSubscriberAutoDeleteOnIdleDurationInSeconds() {
-		return subscriberAutoDeleteOnIdleDurationInSeconds;
+		return this.subscriberAutoDeleteOnIdleDurationInSeconds;
 	}
 
 	/**
