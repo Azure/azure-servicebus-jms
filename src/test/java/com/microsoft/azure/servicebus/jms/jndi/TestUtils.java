@@ -10,7 +10,7 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 
 class TestUtils {
-    static final String TEST_CONNECTION_STRING = "Endpoint=sb://jmstest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=40jdospvZxLAW81IKZoMEi2FXazM7BHkk+ASbGqY94o=";//System.getenv("SERVICE_BUS_CONNECTION_STRING");
+    static final String TEST_CONNECTION_STRING = System.getenv("SERVICE_BUS_CONNECTION_STRING");
 
     static void testInvalidJNDIStorable(JNDIStorable invalidStorable, String propertyName) throws Exception {
         boolean caughtExpectedException = false;
