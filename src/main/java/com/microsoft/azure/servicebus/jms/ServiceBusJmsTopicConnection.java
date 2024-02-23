@@ -3,12 +3,12 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-import javax.jms.ConnectionConsumer;
-import javax.jms.JMSException;
-import javax.jms.ServerSessionPool;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicSession;
+import jakarta.jms.ConnectionConsumer;
+import jakarta.jms.JMSException;
+import jakarta.jms.ServerSessionPool;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicSession;
 
 class ServiceBusJmsTopicConnection extends ServiceBusJmsConnection implements TopicConnection {
     private final TopicConnection innerTopicConnection;

@@ -5,14 +5,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.jms.Connection;
+import jakarta.jms.Connection;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
-
 
 public class ConfigurationOptionsTest {
     ConnectionStringBuilder connectionStringBuilder;
@@ -35,7 +34,7 @@ public class ConfigurationOptionsTest {
         
         Map<String, String> expectedOptions = new HashMap<String, String>();
         expectedOptions.put("jms.prefetchPolicy.all", "100");
-        ServiceBusJmsConnectionFactorySettings settings = new ServiceBusJmsConnectionFactorySettings(options);
+        ServiceBusJmsConnectionFactorySettings settings = new ServiceBusJmsConnectionFactorySettings(expectedOptions);
         sbConnectionFactory = new ServiceBusJmsConnectionFactory(connectionStringBuilder, settings);
         Map<String, String> actualOptions = sbConnectionFactory.getSettings().getConfigurationOptions();
         assertEquals("100", actualOptions.get("jms.prefetchPolicy.all"));

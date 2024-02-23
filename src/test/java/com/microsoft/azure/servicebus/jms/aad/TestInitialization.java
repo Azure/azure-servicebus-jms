@@ -6,14 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jms.Destination;
-import javax.jms.JMSConsumer;
-import javax.jms.JMSContext;
-import javax.jms.JMSException;
-import javax.jms.JMSProducer;
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSConsumer;
+import jakarta.jms.JMSContext;
+import jakarta.jms.JMSException;
+import jakarta.jms.JMSProducer;
+import jakarta.jms.Queue;
+import jakarta.jms.TextMessage;
+import jakarta.jms.Topic;
 
 import com.azure.core.credential.TokenCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
@@ -69,7 +69,7 @@ public class TestInitialization
         this.CLIENT_SECRET = System.getenv("AZURE_CLIENT_SECRET");
         
         // Primary Connection String
-        this.CONNECTION_STRING = System.getenv("SERVICE_BUS_CONNECTION_STRING");
+        this.CONNECTION_STRING = "Endpoint=sb://jmstest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=40jdospvZxLAW81IKZoMEi2FXazM7BHkk+ASbGqY94o=";//System.getenv("SERVICE_BUS_CONNECTION_STRING");
         
         // Common
         this.HOST = System.getenv("HOST_NAMESPACE");

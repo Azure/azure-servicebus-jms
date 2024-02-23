@@ -3,11 +3,11 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
+import jakarta.jms.QueueReceiver;
+import jakarta.jms.QueueSender;
+import jakarta.jms.QueueSession;
 
 class ServiceBusJmsQueueSession extends ServiceBusJmsSession implements QueueSession {
     private final QueueSession innerQueueSession;

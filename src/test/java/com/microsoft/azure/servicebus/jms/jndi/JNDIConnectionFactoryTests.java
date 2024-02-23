@@ -6,9 +6,7 @@ package com.microsoft.azure.servicebus.jms.jndi;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.UUID;
-
-import javax.jms.*;
+import jakarta.jms.*;
 import javax.naming.Reference;
 
 import org.junit.Test;
