@@ -35,7 +35,7 @@ public class ConfigurationOptionsTest {
         
         Map<String, String> expectedOptions = new HashMap<String, String>();
         expectedOptions.put("jms.prefetchPolicy.all", "100");
-        ServiceBusJmsConnectionFactorySettings settings = new ServiceBusJmsConnectionFactorySettings(options);
+        ServiceBusJmsConnectionFactorySettings settings = new ServiceBusJmsConnectionFactorySettings(expectedOptions);
         sbConnectionFactory = new ServiceBusJmsConnectionFactory(connectionStringBuilder, settings);
         Map<String, String> actualOptions = sbConnectionFactory.getSettings().getConfigurationOptions();
         assertEquals("100", actualOptions.get("jms.prefetchPolicy.all"));
