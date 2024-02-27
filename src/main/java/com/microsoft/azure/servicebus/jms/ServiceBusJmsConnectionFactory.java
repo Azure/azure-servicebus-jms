@@ -81,7 +81,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.password = connectionStringBuilder.getSasKey();
         this.userName = connectionStringBuilder.getSasKeyName();
         this.host = connectionStringBuilder.getEndpoint().getHost();
-        this.initializeWithSas();        
+        this.initializeWithSas();
     }
     
     /**
