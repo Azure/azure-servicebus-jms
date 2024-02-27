@@ -42,7 +42,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     private AadAuthentication aadAuthentication;
    
     //Common properties
-    private final ServiceBusJmsConnectionFactorySettings settings;
+    private ServiceBusJmsConnectionFactorySettings settings;
     private volatile boolean initialized;
     private JmsConnectionFactory factory;
     private ConnectionStringBuilder builder;
@@ -53,6 +53,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     
     /**
      * Intended to be used by JNDI only. Users should not be actively calling this constructor to create a ServiceBusJmsConnectionFactory instance.
+     * So far only use by JNDIConnectionFactoryTests. 
      */
     public ServiceBusJmsConnectionFactory() { 
         this.settings = null;
@@ -81,7 +82,6 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.userName = connectionStringBuilder.getSasKeyName();
         this.host = connectionStringBuilder.getEndpoint().getHost();
         this.initializeWithSas();
-        
     }
     
     /**
@@ -115,14 +115,21 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     }
     
     private void initializeWithAad() {
-    	this.initialize(this.userName, this.password, this.host, this.settings);
+        if (this.settings == null) {
+            this.settings = new ServiceBusJmsConnectionFactorySettings();
+        }
+
+    	this.initialize(this.userName, this.password, this.host);
     	this.setExtensionsForAad();
     	this.initialized = true;
     }
     
     private void initializeWithSas() {
+        if (this.settings == null) {
+            this.settings = new ServiceBusJmsConnectionFactorySettings();
+        }
 
-    	this.initialize(this.userName, this.password, this.host, this.settings);
+    	this.initialize(this.userName, this.password, this.host);
     	if (this.builder == null) {
             try {
                 this.builder = new ConnectionStringBuilder(new URI(host), null, this.userName, this.password);
@@ -134,20 +141,17 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     	this.initialized = true;
     }
     
-    private void initialize(String userName, String password, String host, ServiceBusJmsConnectionFactorySettings settings) {
+    private void initialize(String userName, String password, String host) {
     	if (userName == null || password == null || host == null) {
             throw new IllegalArgumentException("Authentication settings and host cannot be null for a Service Bus connection factory.");
         }
-        if (settings == null) {
-            settings = new ServiceBusJmsConnectionFactorySettings();
-        }
-                
+        
         String destinationUri = "amqps://" + host;
-        if (settings.shouldReconnect()) {
-            destinationUri = getReconnectUri(destinationUri, settings);
+        if (this.settings.shouldReconnect()) {
+            destinationUri = getReconnectUri(destinationUri, this.settings);
         }
         
-        String serviceBusQuery = settings.getServiceBusQuery();
+        String serviceBusQuery = this.settings.getServiceBusQuery();
         destinationUri += serviceBusQuery;
         this.factory = new JmsConnectionFactory(userName, password, destinationUri);
         
@@ -190,7 +194,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
             return properties;
         });  
 
-        Supplier<ProxyHandler> proxyHandlerSupplier = settings.getProxyHandlerSupplier();
+        Supplier<ProxyHandler> proxyHandlerSupplier = this.settings.getProxyHandlerSupplier();
         if (proxyHandlerSupplier != null) {
             factory.setExtension(JmsConnectionExtensions.PROXY_HANDLER_SUPPLIER.toString(), (connection, remote) -> {
                 return proxyHandlerSupplier;
