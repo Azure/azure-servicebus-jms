@@ -172,22 +172,19 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
             
             properties.put("user-agent", userAgent.toString());
 
-            if (this.settings != null)
-            {
-	            long queueAutoDeleteOnIdleDurationInSeconds = this.settings.getQueueAutoDeleteOnIdleDurationInSeconds();
-	            if (queueAutoDeleteOnIdleDurationInSeconds > 0) {
-	            	properties.put(ServiceBusJmsConnectionFactorySettings.QueueAutoDeleteOnIdleDurationInSecondsName, queueAutoDeleteOnIdleDurationInSeconds);
-	            }
+            long queueAutoDeleteOnIdleDurationInSeconds = this.settings.getQueueAutoDeleteOnIdleDurationInSeconds();
+            if (queueAutoDeleteOnIdleDurationInSeconds > 0) {
+            	properties.put(ServiceBusJmsConnectionFactorySettings.QueueAutoDeleteOnIdleDurationInSecondsName, queueAutoDeleteOnIdleDurationInSeconds);
+            }
 	            
-	            long topicAutoDeleteOnIdleDurationInSeconds = this.settings.getTopicAutoDeleteOnIdleDurationInSeconds();
-	            if (topicAutoDeleteOnIdleDurationInSeconds > 0) {
-	            	properties.put(ServiceBusJmsConnectionFactorySettings.TopicAutoDeleteOnIdleDurationInSecondsName, topicAutoDeleteOnIdleDurationInSeconds);
-	            }
+            long topicAutoDeleteOnIdleDurationInSeconds = this.settings.getTopicAutoDeleteOnIdleDurationInSeconds();
+            if (topicAutoDeleteOnIdleDurationInSeconds > 0) {
+            	properties.put(ServiceBusJmsConnectionFactorySettings.TopicAutoDeleteOnIdleDurationInSecondsName, topicAutoDeleteOnIdleDurationInSeconds);
+            }
 	            
-	            long subscriberAutoDeleteOnIdleDurationInSeconds = this.settings.getSubscriberAutoDeleteOnIdleDurationInSeconds();
-	            if (subscriberAutoDeleteOnIdleDurationInSeconds > 0) {
-	            	properties.put(ServiceBusJmsConnectionFactorySettings.SubscriberAutoDeleteOnIdleDurationInSecondsName, subscriberAutoDeleteOnIdleDurationInSeconds);
-	            }
+            long subscriberAutoDeleteOnIdleDurationInSeconds = this.settings.getSubscriberAutoDeleteOnIdleDurationInSeconds();
+            if (subscriberAutoDeleteOnIdleDurationInSeconds > 0) {
+            	properties.put(ServiceBusJmsConnectionFactorySettings.SubscriberAutoDeleteOnIdleDurationInSecondsName, subscriberAutoDeleteOnIdleDurationInSeconds);
             }
 
             return properties;
