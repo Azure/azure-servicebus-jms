@@ -69,7 +69,7 @@ public class TestInitialization
         this.CLIENT_SECRET = System.getenv("AZURE_CLIENT_SECRET");
         
         // Primary Connection String
-        this.CONNECTION_STRING = "Endpoint=sb://jmstest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=40jdospvZxLAW81IKZoMEi2FXazM7BHkk+ASbGqY94o=";//System.getenv("SERVICE_BUS_CONNECTION_STRING");
+        this.CONNECTION_STRING = System.getenv("SERVICE_BUS_CONNECTION_STRING");
         
         // Common
         this.HOST = System.getenv("HOST_NAMESPACE");
