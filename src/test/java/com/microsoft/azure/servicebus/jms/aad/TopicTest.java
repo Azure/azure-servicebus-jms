@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 package com.microsoft.azure.servicebus.jms.aad;
 
-import org.junit.Test;
-
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import org.junit.jupiter.api.Test;
 
 public class TopicTest  {
 	
