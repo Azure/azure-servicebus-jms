@@ -79,5 +79,10 @@
 		    <artifactId>azure-identity</artifactId>
 		    <version>1.11.2</version>
 		</dependency>
+		<dependency>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	</dependencies>
 </project>
