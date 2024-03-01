@@ -325,15 +325,13 @@ public class ServiceBusJmsConnectionFactorySettings {
         }
         
         if (this.configurationOptions == null) {
-            this.configurationOptions = new HashMap<String, String>();
+            this.configurationOptions = new HashMap<>();
         }
         
         // Append the default options if the ones provided by the user does not contain it.
         // Since these are query parameters, they are case sensitive.
         for (String defaultOption : DefaultConfigurationOptions.keySet()) {
-            if (!configurationOptions.containsKey(defaultOption)) {
-                configurationOptions.put(defaultOption, DefaultConfigurationOptions.get(defaultOption));
-            }
+            configurationOptions.putIfAbsent(defaultOption, DefaultConfigurationOptions.get(defaultOption));
         }
         
         for (String option : configurationOptions.keySet()) {
@@ -398,7 +396,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     }
     
     private static Map<String, String> getDefaultConfigurationOptions() {
-        Map<String, String> defaultConfigurationOptions = new HashMap<String, String>();
+        Map<String, String> defaultConfigurationOptions = new HashMap<>();
         defaultConfigurationOptions.put("jms.prefetchPolicy.all", "0");
         return defaultConfigurationOptions;
     }

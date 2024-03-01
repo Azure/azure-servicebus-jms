@@ -36,13 +36,12 @@ public final class ServiceBusJmsQueue extends JNDIStorable implements Queue {
 
     @Override
     protected Map<String, String> getProperties() {
-        Map<String, String> properties = new HashMap<String,String>();
+        Map<String, String> properties = new HashMap<>();
         try {
             String name = this.getQueueName();
             properties.put(NAME_PROPERTY, name);
         } catch (JMSException exception) {
             String errorMsg = "Cannot get queue name due to exception: " + exception.getMessage();
-            System.err.println(errorMsg);
             throw new JMSRuntimeException(errorMsg, "", exception);
         }
         
