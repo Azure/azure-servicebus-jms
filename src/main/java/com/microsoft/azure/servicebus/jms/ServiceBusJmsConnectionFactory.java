@@ -284,7 +284,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     @Override
     protected Map<String, String> getProperties() {
         // build a map of properties for JNDI
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         
         String connectionString = this.builder == null ? null : this.builder.toString();
         properties.put(CONNECTION_STRING_PROPERTY, connectionString);
