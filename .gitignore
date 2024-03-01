@@ -51,3 +51,6 @@ target
 
 # Windows #
 Thumbs.db
+
+# vscode
+.vscode
