@@ -5,6 +5,7 @@ package com.microsoft.azure.servicebus.jms.jndi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.UUID;
 
 import jakarta.jms.Connection;
