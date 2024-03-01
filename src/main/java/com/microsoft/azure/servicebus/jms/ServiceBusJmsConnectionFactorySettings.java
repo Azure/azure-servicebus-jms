@@ -331,9 +331,7 @@ public class ServiceBusJmsConnectionFactorySettings {
         // Append the default options if the ones provided by the user does not contain it.
         // Since these are query parameters, they are case sensitive.
         for (String defaultOption : DefaultConfigurationOptions.keySet()) {
-            if (!configurationOptions.containsKey(defaultOption)) {
-                configurationOptions.put(defaultOption, DefaultConfigurationOptions.get(defaultOption));
-            }
+            configurationOptions.putIfAbsent(defaultOption, DefaultConfigurationOptions.get(defaultOption));
         }
         
         for (String option : configurationOptions.keySet()) {
