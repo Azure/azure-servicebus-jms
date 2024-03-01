@@ -1,13 +1,14 @@
 package com.microsoft.azure.servicebus.jms.jndi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.jms.Connection;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
@@ -17,7 +18,7 @@ import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings
 public class ConfigurationOptionsTest {
     ConnectionStringBuilder connectionStringBuilder;
     
-    @Before
+    @BeforeEach
     public void testInitialize() {
         connectionStringBuilder = new ConnectionStringBuilder(TestUtils.TEST_CONNECTION_STRING);
     }

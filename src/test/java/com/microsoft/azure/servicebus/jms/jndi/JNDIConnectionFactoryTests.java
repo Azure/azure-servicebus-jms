@@ -3,15 +3,12 @@
 
 package com.microsoft.azure.servicebus.jms.jndi;
 
-
-import static org.junit.Assert.assertNotNull;
-
-import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.jms.*;
 import javax.naming.Reference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;

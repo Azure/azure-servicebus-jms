@@ -2,7 +2,7 @@
 package com.microsoft.azure.servicebus.jms.connection.string;
 
 import javax.jms.TextMessage;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.microsoft.azure.servicebus.jms.aad.TestInitialization;
 
 public class QueueTests {	
