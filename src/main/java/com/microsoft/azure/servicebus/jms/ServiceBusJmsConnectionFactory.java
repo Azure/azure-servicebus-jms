@@ -35,7 +35,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     // JNDI property names
     private static final String CONNECTION_STRING_PROPERTY = "connectionString";
     private static final String CLIENT_ID_PROPERTY = "clientId";
-    private static final int MaxCustomUserAgentLength = 128;
+    private static final int MAXCUSTOMUSERAGENTLENGTH = 128;
 
     // AAD TOKEN properties
     private final String AAD_TOKEN_USERNAME = "$jwt";
@@ -301,7 +301,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     @Override
     protected Map<String, String> getProperties() {
         // build a map of properties for JNDI
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         
         String connectionString = this.builder == null ? null : this.builder.toString();
         properties.put(CONNECTION_STRING_PROPERTY, connectionString);
@@ -358,8 +358,8 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     }
     
     protected void setCustomUserAgent(String customUserAgent) {
-        if (customUserAgent != null && customUserAgent.length() > MaxCustomUserAgentLength) {
-            throw new IllegalArgumentException("The length of the custom userAgent cannot exceed " + MaxCustomUserAgentLength);
+        if (customUserAgent != null && customUserAgent.length() > MAXCUSTOMUSERAGENTLENGTH) {
+            throw new IllegalArgumentException("The length of the custom userAgent cannot exceed " + MAXCUSTOMUSERAGENTLENGTH);
         }
         
         this.customUserAgent = customUserAgent;
