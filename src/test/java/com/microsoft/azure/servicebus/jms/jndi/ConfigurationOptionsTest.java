@@ -5,15 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.jms.Connection;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.jms.Connection;
 
 import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
-
 
 public class ConfigurationOptionsTest {
     ConnectionStringBuilder connectionStringBuilder;

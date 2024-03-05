@@ -8,9 +8,9 @@ import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.jms.JMSException;
-import javax.jms.JMSRuntimeException;
-import javax.jms.Topic;
+import jakarta.jms.JMSException;
+import jakarta.jms.JMSRuntimeException;
+import jakarta.jms.Topic;
 import org.apache.qpid.jms.JmsTopic;
 
 /** Intended for JNDI use only. Users should not be actively referencing this class */

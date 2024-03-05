@@ -3,9 +3,9 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-import javax.jms.JMSException;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.QueueConnection;
+import jakarta.jms.QueueConnectionFactory;
 
 public class ServiceBusJmsQueueConnectionFactory extends ServiceBusJmsConnectionFactory implements QueueConnectionFactory {
 

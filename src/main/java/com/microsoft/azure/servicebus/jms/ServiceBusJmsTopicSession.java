@@ -3,11 +3,11 @@
 
 package com.microsoft.azure.servicebus.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Topic;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import jakarta.jms.JMSException;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
+import jakarta.jms.TopicSubscriber;
 
 class ServiceBusJmsTopicSession extends ServiceBusJmsSession implements TopicSession {
     private final TopicSession innerTopicSession;

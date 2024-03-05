@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 package com.microsoft.azure.servicebus.jms.connection.string;
 
-import javax.jms.TextMessage;
+import jakarta.jms.TextMessage;
 import org.junit.jupiter.api.Test;
 import com.microsoft.azure.servicebus.jms.aad.TestInitialization;
 
