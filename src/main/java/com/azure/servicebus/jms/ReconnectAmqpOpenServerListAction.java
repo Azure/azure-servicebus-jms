@@ -1,4 +1,4 @@
-package com.microsoft.azure.servicebus.jms;
+package com.azure.servicebus.jms;
 
 /**
 * If REPLACE is configured then all reconnect URIs other than the one for the current server are replaced with those provided by the remote peer.

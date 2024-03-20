@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
-package com.microsoft.azure.servicebus.jms.aad;
+package com.azure.servicebus.jms.aad;
 
 import org.junit.jupiter.api.Test;
 

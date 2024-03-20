@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package com.microsoft.azure.servicebus.jms.jndi;
+package com.azure.servicebus.jms.jndi;
 
 import java.util.Map;
 

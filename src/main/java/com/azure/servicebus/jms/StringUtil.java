@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package com.microsoft.azure.servicebus.jms;
+package com.azure.servicebus.jms;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

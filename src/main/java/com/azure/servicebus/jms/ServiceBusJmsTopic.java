@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package com.microsoft.azure.servicebus.jms;
-
-import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
+package com.azure.servicebus.jms;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +10,8 @@ import jakarta.jms.JMSException;
 import jakarta.jms.JMSRuntimeException;
 import jakarta.jms.Topic;
 import org.apache.qpid.jms.JmsTopic;
+
+import com.azure.servicebus.jms.jndi.JNDIStorable;
 
 /** Intended for JNDI use only. Users should not be actively referencing this class */
 public final class ServiceBusJmsTopic extends JNDIStorable implements Topic {

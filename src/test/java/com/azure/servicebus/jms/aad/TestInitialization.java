@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved.
-package com.microsoft.azure.servicebus.jms.aad;
+package com.azure.servicebus.jms.aad;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -18,8 +18,8 @@ import jakarta.jms.Topic;
 import com.azure.core.credential.TokenCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.identity.DefaultAzureCredentialBuilder;
-import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
-import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
+import com.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
+import com.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
 
 public class TestInitialization 
 {	

@@ -1,7 +1,8 @@
-package com.microsoft.azure.servicebus.jms.connection.string;
+package com.azure.servicebus.jms.connection.string;
 
 import org.junit.jupiter.api.Test;
-import com.microsoft.azure.servicebus.jms.aad.TestInitialization;
+
+import com.azure.servicebus.jms.aad.TestInitialization;
 
 public class TopicTests {	
 

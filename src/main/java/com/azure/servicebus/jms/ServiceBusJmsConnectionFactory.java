@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package com.microsoft.azure.servicebus.jms;
+package com.azure.servicebus.jms;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,7 +26,7 @@ import org.apache.qpid.jms.JmsConnectionExtensions;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
 import com.azure.core.credential.TokenCredential;
-import com.microsoft.azure.servicebus.jms.jndi.JNDIStorable;
+import com.azure.servicebus.jms.jndi.JNDIStorable;
 
 import io.netty.handler.proxy.ProxyHandler;
 import io.netty.util.internal.StringUtil;

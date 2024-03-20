@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package com.microsoft.azure.servicebus.jms;
+package com.azure.servicebus.jms;
 
 /**
  * This exception is thrown when the connection string provided does not meet the requirement for connection.

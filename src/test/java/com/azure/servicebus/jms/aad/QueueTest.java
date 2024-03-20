@@ -1,4 +1,4 @@
-package com.microsoft.azure.servicebus.jms.aad;
+package com.azure.servicebus.jms.aad;
 
 import org.junit.jupiter.api.Test;
 import com.azure.identity.DefaultAzureCredentialBuilder;

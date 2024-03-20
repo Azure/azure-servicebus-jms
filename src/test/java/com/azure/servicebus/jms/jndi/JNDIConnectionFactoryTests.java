@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package com.microsoft.azure.servicebus.jms.jndi;
+package com.azure.servicebus.jms.jndi;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -10,8 +10,8 @@ import javax.naming.Reference;
 
 import org.junit.jupiter.api.Test;
 
-import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
-import com.microsoft.azure.servicebus.jms.ConnectionStringBuilder;
+import com.azure.servicebus.jms.ConnectionStringBuilder;
+import com.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 
 public class JNDIConnectionFactoryTests {
     
