@@ -314,16 +314,23 @@ public class ServiceBusJmsConnectionFactorySettings {
         this.reconnectAmqpOpenServerListAction = amqpOpenServerListAction;
     }
     
-    String getServiceBusQuery() {
+    String getPerHostAmqpProviderQuery()
+    {
         StringBuilder builder = new StringBuilder();
-        if (connectionIdleTimeoutMS > 0) {
-            appendQuery(builder, "amqp.idleTimeout", String.valueOf(connectionIdleTimeoutMS));
+        if (this.connectionIdleTimeoutMS > 0) {
+            StringUtil.appendQuery(builder, "amqp.idleTimeout", String.valueOf(this.connectionIdleTimeoutMS));
         }
         
-        if (traceFrames) {
-            appendQuery(builder, "amqp.traceFrames", "true");
+        if (this.traceFrames) {
+            StringUtil.appendQuery(builder, "amqp.traceFrames", "true");
         }
         
+        return builder.toString();
+    }
+
+    String getGlobalJMSProviderQuery() {
+        StringBuilder builder = new StringBuilder();
+
         if (this.configurationOptions == null) {
             this.configurationOptions = new HashMap<>();
         }
@@ -333,66 +340,58 @@ public class ServiceBusJmsConnectionFactorySettings {
         for (String defaultOption : DefaultConfigurationOptions.keySet()) {
             configurationOptions.putIfAbsent(defaultOption, DefaultConfigurationOptions.get(defaultOption));
         }
-        
+
         for (String option : configurationOptions.keySet()) {
-            appendQuery(builder, option, configurationOptions.get(option));
+             StringUtil.appendQuery(builder, option, configurationOptions.get(option));
         }
         
         return builder.toString();
     }
     
-    String getReconnectQuery() {
+    String getGlobalFailoverProviderQuery() {
         StringBuilder queryBuilder = new StringBuilder();
         
         if (initialReconnectDelay != null) {
-            appendQuery(queryBuilder, "failover.initialReconnectDelay", String.valueOf(initialReconnectDelay));
+            StringUtil.appendQuery(queryBuilder, "failover.initialReconnectDelay", String.valueOf(initialReconnectDelay));
         }
         
         if (reconnectDelay != null) {
-            appendQuery(queryBuilder, "failover.reconnectDelay", String.valueOf(reconnectDelay));
+            StringUtil.appendQuery(queryBuilder, "failover.reconnectDelay", String.valueOf(reconnectDelay));
         }
         
         if (maxReconnectDelay != null) {
-            appendQuery(queryBuilder, "failover.maxReconnectDelay", String.valueOf(maxReconnectDelay));
+            StringUtil.appendQuery(queryBuilder, "failover.maxReconnectDelay", String.valueOf(maxReconnectDelay));
         }
         
         if (useReconnectBackOff != null) {
-            appendQuery(queryBuilder, "failover.useReconnectBackOff", String.valueOf(useReconnectBackOff));
+            StringUtil.appendQuery(queryBuilder, "failover.useReconnectBackOff", String.valueOf(useReconnectBackOff));
         }
         
         if (reconnectBackOffMultiplier != null) {
-            appendQuery(queryBuilder, "failover.reconnectBackOffMultiplier", String.valueOf(reconnectBackOffMultiplier));
+            StringUtil.appendQuery(queryBuilder, "failover.reconnectBackOffMultiplier", String.valueOf(reconnectBackOffMultiplier));
         }
         
         if (maxReconnectAttempts != null) {
-            appendQuery(queryBuilder, "failover.maxReconnectAttempts", String.valueOf(maxReconnectAttempts));
+            StringUtil.appendQuery(queryBuilder, "failover.maxReconnectAttempts", String.valueOf(maxReconnectAttempts));
         }
         
         if (startupMaxReconnectAttempts != null) {
-            appendQuery(queryBuilder, "failover.startupMaxReconnectAttempts", String.valueOf(startupMaxReconnectAttempts));
+            StringUtil.appendQuery(queryBuilder, "failover.startupMaxReconnectAttempts", String.valueOf(startupMaxReconnectAttempts));
         }
         
         if (warnAfterReconnectAttempts != null) {
-            appendQuery(queryBuilder, "failover.warnAfterReconnectAttempts", String.valueOf(warnAfterReconnectAttempts));
+            StringUtil.appendQuery(queryBuilder, "failover.warnAfterReconnectAttempts", String.valueOf(warnAfterReconnectAttempts));
         }
 
         if (reconnectRandomize != null) {
-            appendQuery(queryBuilder, "failover.randomize", String.valueOf(reconnectRandomize));
+            StringUtil.appendQuery(queryBuilder, "failover.randomize", String.valueOf(reconnectRandomize));
         }
         
         if (reconnectAmqpOpenServerListAction != null) {
-            appendQuery(queryBuilder, "failover.amqpOpenServerListAction", reconnectAmqpOpenServerListAction.name());
+            StringUtil.appendQuery(queryBuilder, "failover.amqpOpenServerListAction", reconnectAmqpOpenServerListAction.name());
         }
         
         return queryBuilder.toString();
-    }
-    
-    private void appendQuery(StringBuilder builder, String key, String value) {
-        if (builder == null) {
-            builder = new StringBuilder();
-        }
-        
-        builder.append((builder.length() == 0) ? "?" : "&").append(key).append("=").append(value);
     }
     
     private static Map<String, String> getDefaultConfigurationOptions() {

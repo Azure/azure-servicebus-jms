@@ -29,6 +29,14 @@ public final class StringUtil {
         return true;
     }
 
+    public static void appendQuery(StringBuilder builder, String key, String value) {
+        if (builder == null) {
+            builder = new StringBuilder();
+        }
+
+        builder.append((builder.length() == 0) ? "" : "&").append(key).append("=").append(value);
+    }
+
     public static String getShortRandomString() {
         return getRandomString().substring(0, 6);
     }

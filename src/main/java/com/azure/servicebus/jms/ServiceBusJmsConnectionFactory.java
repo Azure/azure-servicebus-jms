@@ -145,16 +145,10 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     	if (userName == null || password == null || host == null) {
             throw new IllegalArgumentException("Authentication settings and host cannot be null for a Service Bus connection factory.");
         }
-        
-        String destinationUri = "amqps://" + host;
-        if (this.settings.shouldReconnect()) {
-            destinationUri = getReconnectUri(destinationUri, this.settings);
-        }
-        
-        String serviceBusQuery = this.settings.getServiceBusQuery();
-        destinationUri += serviceBusQuery;
-        this.factory = new JmsConnectionFactory(userName, password, destinationUri);
-        
+
+        String remoteConnectionUri = this.getServiceBusRemoteConnectionUri();
+        this.factory = new JmsConnectionFactory(userName, password, remoteConnectionUri);
+
         this.factory.setExtension(JmsConnectionExtensions.AMQP_OPEN_PROPERTIES.toString(), (connection, uri) -> {
             Map<String, Object> properties = new HashMap<>();
             properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
@@ -365,26 +359,57 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.customUserAgent = customUserAgent;
     }
     
-    // Obtain the reconnect URI in the form that QPID could understand.
+    private String getServiceBusRemoteConnectionUri()
+    {
+        String hostUri = "amqps://" + this.host;
+        String amqpPerHostQuery = settings.getPerHostAmqpProviderQuery();
+
+        if (!amqpPerHostQuery.isEmpty()) {
+              hostUri += "?" + amqpPerHostQuery;
+        }
+
+        String jmsProviderQuery = settings.getGlobalJMSProviderQuery();
+
+        String remoteConnectionUri;
+        if (this.settings.shouldReconnect()) {
+            String failoverUri = getFailoverUri(hostUri, amqpPerHostQuery, this.settings);
+
+            // Append failover Provider options if any
+            String failoverOptionsQuery = settings.getGlobalFailoverProviderQuery();
+            remoteConnectionUri = failoverUri + (!failoverOptionsQuery.isEmpty() ? "?" + failoverOptionsQuery : "");
+
+            //Append jmsProvider options if any
+            if (!jmsProviderQuery.isEmpty()) {
+                 remoteConnectionUri += (!failoverOptionsQuery.isEmpty() ? "&" : "?") + jmsProviderQuery;
+            }
+        }
+        else {
+            remoteConnectionUri = hostUri + (!jmsProviderQuery.isEmpty() ? (amqpPerHostQuery.isEmpty() ? "?" : "&") + jmsProviderQuery : "");
+        }
+
+        return remoteConnectionUri;
+    }
+
+    // Obtain the failover URI in the form that QPID could understand.
     // Example: failover:(amqps://contoso.servicebus.windows.net?amqp.idleTimeout=30000,amqps://contoso2.servicebus.windows.net?amqp.idleTimeout=30000)?failover.maxReconnectAttempts=20
-    private String getReconnectUri(String originalHost, ServiceBusJmsConnectionFactorySettings settings) {
+    private String getFailoverUri(String hostUri, String amqpPerHostQuery, ServiceBusJmsConnectionFactorySettings settings) {
         StringBuilder builder = new StringBuilder("failover:(");
-        builder.append(originalHost);
+        builder.append(hostUri);
         
         String[] reconnectHosts = settings.getReconnectHosts();
         if (settings.getReconnectHosts() != null) {
-            String serviceBusQuery = settings.getServiceBusQuery();
-            
             for (String reconnectHost: reconnectHosts) {
                 builder.append(",");
                 builder.append("amqps://");
                 builder.append(reconnectHost);
-                builder.append(serviceBusQuery);
+                if (!amqpPerHostQuery.isEmpty()) {
+                    builder.append("?");
+                    builder.append(amqpPerHostQuery);
+                }
             }
         }
         
         builder.append(")");
-        builder.append(settings.getReconnectQuery());
         return builder.toString();
     }
     
