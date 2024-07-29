@@ -24,6 +24,7 @@ import jakarta.jms.TopicConnectionFactory;
 
 import org.apache.qpid.jms.JmsConnectionExtensions;
 import org.apache.qpid.jms.JmsConnectionFactory;
+import org.apache.qpid.jms.policy.JmsPrefetchPolicy;
 
 import com.azure.core.credential.TokenCredential;
 import com.azure.servicebus.jms.jndi.JNDIStorable;
@@ -50,6 +51,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     private String userName;
     private String password;
     private String host;
+    private String remoteConnectionUri;
     
     /**
      * Intended to be used by JNDI only. Users should not be actively calling this constructor to create a ServiceBusJmsConnectionFactory instance.
@@ -146,8 +148,8 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
             throw new IllegalArgumentException("Authentication settings and host cannot be null for a Service Bus connection factory.");
         }
 
-        String remoteConnectionUri = this.getServiceBusRemoteConnectionUri();
-        this.factory = new JmsConnectionFactory(userName, password, remoteConnectionUri);
+        this.remoteConnectionUri = this.getServiceBusRemoteConnectionUri();
+        this.factory = new JmsConnectionFactory(userName, password, this.remoteConnectionUri);
 
         this.factory.setExtension(JmsConnectionExtensions.AMQP_OPEN_PROPERTIES.toString(), (connection, uri) -> {
             Map<String, Object> properties = new HashMap<>();
@@ -222,6 +224,20 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         return this.settings;
     }
     
+    /*
+     *  @return The RemoteUri set for this ConnectionFactory.
+     */
+    public String getRemoteConnectionUri() {
+        return this.remoteConnectionUri;
+    }
+
+    /*
+     *  @return The PrefetchPolicy set for this ConnectionFactory.
+     */
+    public JmsPrefetchPolicy getPrefetchPolicy() {
+        return this.factory.getPrefetchPolicy();
+    }
+
     @Override
     public Connection createConnection() throws JMSException {
         this.ensureInitialized();
@@ -372,7 +388,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
 
         String remoteConnectionUri;
         if (this.settings.shouldReconnect()) {
-            String failoverUri = getFailoverUri(hostUri, amqpPerHostQuery, this.settings);
+            String failoverUri = this.getFailoverUri(hostUri, amqpPerHostQuery, this.settings);
 
             // Append failover Provider options if any
             String failoverOptionsQuery = settings.getGlobalFailoverProviderQuery();
