@@ -74,6 +74,8 @@ public class TestInitialization
         // Common
         this.HOST = System.getenv("HOST_NAMESPACE");
         this.SETTINGS = new ServiceBusJmsConnectionFactorySettings();
+        // Setting this just to make sure when these options are specified the URI and factory gets formed correctly.
+        this.SETTINGS.setConnectionIdleTimeoutMS(62000);
         this.entityName = entityName;
 	}
 	
