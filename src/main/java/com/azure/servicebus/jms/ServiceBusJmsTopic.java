@@ -60,4 +60,41 @@ public final class ServiceBusJmsTopic extends JNDIStorable implements Topic {
         JmsTopic innerTopic = new JmsTopic(name);
         this.innerTopic = innerTopic;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ServiceBusJmsTopic that = (ServiceBusJmsTopic) obj;
+        try {
+            String thisTopicName = this.getTopicName();
+            String thatTopicName = that.getTopicName();
+            return thisTopicName != null ? thisTopicName.equals(thatTopicName) : thatTopicName == null;
+        } catch (JMSException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        try {
+            String topicName = this.getTopicName();
+            return topicName != null ? topicName.hashCode() : 0;
+        } catch (JMSException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return "ServiceBusJmsTopic{topicName='" + this.getTopicName() + "'}";
+        } catch (JMSException e) {
+            return "ServiceBusJmsTopic{topicName=<error: " + e.getMessage() + ">}";
+        }
+    }
 }

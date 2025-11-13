@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 
-class TestUtils {
-    static final String TEST_CONNECTION_STRING = System.getenv("SERVICE_BUS_CONNECTION_STRING");
+public class TestUtils {
+    public static final String TEST_CONNECTION_STRING = System.getenv("SERVICE_BUS_CONNECTION_STRING");
 
     static void testInvalidJNDIStorable(JNDIStorable invalidStorable, String propertyName) throws Exception {
         boolean caughtExpectedException = false;
