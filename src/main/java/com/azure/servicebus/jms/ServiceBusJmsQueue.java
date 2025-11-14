@@ -61,4 +61,41 @@ public final class ServiceBusJmsQueue extends JNDIStorable implements Queue {
         JmsQueue innerQueue = new JmsQueue(name);
         this.innerQueue = innerQueue;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ServiceBusJmsQueue that = (ServiceBusJmsQueue) obj;
+        try {
+            String thisQueueName = this.getQueueName();
+            String thatQueueName = that.getQueueName();
+            return thisQueueName != null ? thisQueueName.equals(thatQueueName) : thatQueueName == null;
+        } catch (JMSException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        try {
+            String queueName = this.getQueueName();
+            return queueName != null ? queueName.hashCode() : 0;
+        } catch (JMSException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return "ServiceBusJmsQueue{queueName='" + this.getQueueName() + "'}";
+        } catch (JMSException e) {
+            return "ServiceBusJmsQueue{queueName=<error: " + e.getMessage() + ">}";
+        }
+    }
 }
