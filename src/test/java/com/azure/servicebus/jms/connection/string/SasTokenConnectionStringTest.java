@@ -97,9 +97,10 @@ public class SasTokenConnectionStringTest {
     }
 
     /**
-     * Verifies that a connection string with SharedAccessSignatureToken (alternate key name)
-     * also works. The ConnectionStringBuilder accepts both 'SharedAccessSignature' and
-     * 'SharedAccessSignatureToken' as valid key names.
+     * Verifies that a connection string with SharedAccessSignatureToken (the primary
+     * key name in ConnectionStringBuilder) also works. The ConnectionStringBuilder
+     * accepts both 'SharedAccessSignatureToken' (primary) and 'SharedAccessSignature'
+     * (alternate) as valid key names for the SAS token property.
      */
     @Test
     public void createFactoryWithSharedAccessSignatureTokenKey() {
@@ -119,6 +120,20 @@ public class SasTokenConnectionStringTest {
         String noAuthConnectionString = "Endpoint=sb://test-ns.servicebus.windows.net/";
         assertThrows(IllegalArgumentException.class, () ->
                 new ServiceBusJmsConnectionFactory(noAuthConnectionString, null));
+    }
+
+    /**
+     * Verifies that a SAS token missing the required 'skn' parameter throws
+     * a targeted IllegalArgumentException instead of a generic null error.
+     */
+    @Test
+    public void sasTokenWithoutSknThrowsTargetedException() {
+        String tokenWithoutSkn = "SharedAccessSignature sr=sb%3A%2F%2Ftest-ns.servicebus.windows.net&sig=dummySig&se=1735689600";
+        String connectionString = "Endpoint=sb://test-ns.servicebus.windows.net/;SharedAccessSignature=" + tokenWithoutSkn;
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new ServiceBusJmsConnectionFactory(connectionString, null));
+        assertTrue(ex.getMessage().contains("skn"),
+                "Exception should mention the missing 'skn' parameter");
     }
 
     /**

@@ -4,8 +4,10 @@
 package com.azure.servicebus.jms;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -456,7 +458,12 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
             String sasToken = connectionStringBuilder.getSharedAccessSignatureToken();
             if (sasToken != null) {
                 this.password = sasToken;
-                this.userName = extractSknFromSasToken(sasToken);
+                String skn = extractSknFromSasToken(sasToken);
+                if (skn == null || skn.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "The SharedAccessSignature token is missing the required 'skn' (shared access key name) parameter.");
+                }
+                this.userName = skn;
             }
         }
     }
@@ -482,7 +489,11 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         for (String part : parameterPart.split("&")) {
             String[] keyValue = part.split("=", 2);
             if (keyValue.length == 2 && "skn".equalsIgnoreCase(keyValue[0].trim())) {
-                return keyValue[1].trim();
+                try {
+                    return URLDecoder.decode(keyValue[1].trim(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    return keyValue[1].trim();
+                }
             }
         }
 
