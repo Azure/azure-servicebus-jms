@@ -4,8 +4,10 @@
 package com.azure.servicebus.jms;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -82,6 +84,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.settings = settings;
         this.password = connectionStringBuilder.getSasKey();
         this.userName = connectionStringBuilder.getSasKeyName();
+        this.applySasTokenCredentialsIfNeeded(connectionStringBuilder);
         this.host = connectionStringBuilder.getEndpoint().getHost();
         this.initializeWithSas();
     }
@@ -348,7 +351,8 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.checkRequiredProperty(CONNECTION_STRING_PROPERTY, connectionString);
         this.builder = new ConnectionStringBuilder(connectionString);
         this.password = this.builder.getSasKey();
-        this.userName = this.builder.getSasKeyName(); 
+        this.userName = this.builder.getSasKeyName();
+        this.applySasTokenCredentialsIfNeeded(this.builder);
         this.host = this.builder.getEndpoint().getHost();
         this.initializeWithSas();
     
@@ -443,5 +447,56 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
 		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {	
 			return this.aadAuthentication.getAadToken();
 	    });
+    }
+
+    /**
+     * If no SAS key/name credentials were found, fall back to the pre-generated SAS token
+     * from the connection string, extracting the 'skn' parameter as the username.
+     */
+    private void applySasTokenCredentialsIfNeeded(ConnectionStringBuilder connectionStringBuilder) {
+        if (this.password == null && this.userName == null) {
+            String sasToken = connectionStringBuilder.getSharedAccessSignatureToken();
+            if (sasToken != null && !sasToken.isEmpty()) {
+                String skn = this.extractSknFromSasToken(sasToken);
+                if (skn == null || skn.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "The SharedAccessSignature token is missing the required 'skn' (shared access key name) parameter.");
+                }
+                this.userName = skn;
+                this.password = sasToken;
+            }
+        }
+    }
+
+    /**
+     * Extract the 'skn' (Shared Access Key Name) parameter from a SAS token string.
+     * SAS token format: SharedAccessSignature sr=<resource>&sig=<signature>&se=<expiry>&skn=<keyName>
+     * @param sasToken The full SAS token string
+     * @return The value of the skn parameter, or null if not found
+     */
+    private String extractSknFromSasToken(String sasToken) {
+        if (sasToken == null || sasToken.isEmpty()) {
+            return null;
+        }
+
+        // The token may start with "SharedAccessSignature " prefix before the key-value pairs
+        String parameterPart = sasToken;
+        int spaceIndex = sasToken.indexOf(' ');
+        if (spaceIndex >= 0) {
+            parameterPart = sasToken.substring(spaceIndex + 1);
+        }
+
+        for (String part : parameterPart.split("&")) {
+            String[] keyValue = part.split("=", 2);
+            if (keyValue.length == 2 && "skn".equalsIgnoreCase(keyValue[0].trim())) {
+                try {
+                    return URLDecoder.decode(keyValue[1].trim(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    return keyValue[1].trim();
+                }
+            }
+        }
+
+        return null;
     }
 }
