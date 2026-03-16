@@ -84,7 +84,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.settings = settings;
         this.password = connectionStringBuilder.getSasKey();
         this.userName = connectionStringBuilder.getSasKeyName();
-        applySasTokenCredentialsIfNeeded(connectionStringBuilder);
+        this.applySasTokenCredentialsIfNeeded(connectionStringBuilder);
         this.host = connectionStringBuilder.getEndpoint().getHost();
         this.initializeWithSas();
     }
@@ -352,7 +352,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.builder = new ConnectionStringBuilder(connectionString);
         this.password = this.builder.getSasKey();
         this.userName = this.builder.getSasKeyName();
-        applySasTokenCredentialsIfNeeded(this.builder);
+        this.applySasTokenCredentialsIfNeeded(this.builder);
         this.host = this.builder.getEndpoint().getHost();
         this.initializeWithSas();
     
@@ -456,14 +456,14 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     private void applySasTokenCredentialsIfNeeded(ConnectionStringBuilder connectionStringBuilder) {
         if (this.password == null && this.userName == null) {
             String sasToken = connectionStringBuilder.getSharedAccessSignatureToken();
-            if (sasToken != null) {
-                this.password = sasToken;
-                String skn = extractSknFromSasToken(sasToken);
+            if (sasToken != null && !sasToken.isEmpty()) {
+                String skn = this.extractSknFromSasToken(sasToken);
                 if (skn == null || skn.isEmpty()) {
                     throw new IllegalArgumentException(
                             "The SharedAccessSignature token is missing the required 'skn' (shared access key name) parameter.");
                 }
                 this.userName = skn;
+                this.password = sasToken;
             }
         }
     }
@@ -474,7 +474,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
      * @param sasToken The full SAS token string
      * @return The value of the skn parameter, or null if not found
      */
-    private static String extractSknFromSasToken(String sasToken) {
+    private String extractSknFromSasToken(String sasToken) {
         if (sasToken == null || sasToken.isEmpty()) {
             return null;
         }
