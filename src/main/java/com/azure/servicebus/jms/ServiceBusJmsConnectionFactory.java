@@ -82,13 +82,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.settings = settings;
         this.password = connectionStringBuilder.getSasKey();
         this.userName = connectionStringBuilder.getSasKeyName();
-        if (this.password == null && this.userName == null) {
-            String sasToken = connectionStringBuilder.getSharedAccessSignatureToken();
-            if (sasToken != null) {
-                this.password = sasToken;
-                this.userName = extractSknFromSasToken(sasToken);
-            }
-        }
+        applySasTokenCredentialsIfNeeded(connectionStringBuilder);
         this.host = connectionStringBuilder.getEndpoint().getHost();
         this.initializeWithSas();
     }
@@ -356,13 +350,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.builder = new ConnectionStringBuilder(connectionString);
         this.password = this.builder.getSasKey();
         this.userName = this.builder.getSasKeyName();
-        if (this.password == null && this.userName == null) {
-            String sasToken = this.builder.getSharedAccessSignatureToken();
-            if (sasToken != null) {
-                this.password = sasToken;
-                this.userName = extractSknFromSasToken(sasToken);
-            }
-        }
+        applySasTokenCredentialsIfNeeded(this.builder);
         this.host = this.builder.getEndpoint().getHost();
         this.initializeWithSas();
     
@@ -457,6 +445,20 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
 		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {	
 			return this.aadAuthentication.getAadToken();
 	    });
+    }
+
+    /**
+     * If no SAS key/name credentials were found, fall back to the pre-generated SAS token
+     * from the connection string, extracting the 'skn' parameter as the username.
+     */
+    private void applySasTokenCredentialsIfNeeded(ConnectionStringBuilder connectionStringBuilder) {
+        if (this.password == null && this.userName == null) {
+            String sasToken = connectionStringBuilder.getSharedAccessSignatureToken();
+            if (sasToken != null) {
+                this.password = sasToken;
+                this.userName = extractSknFromSasToken(sasToken);
+            }
+        }
     }
 
     /**

@@ -4,11 +4,9 @@
 package com.azure.servicebus.jms.connection.string;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.naming.Reference;
 
@@ -70,7 +68,7 @@ public class SasTokenConnectionStringTest {
         String remoteUri = factory.getRemoteConnectionUri();
         assertNotNull(remoteUri);
         // The URI should contain the host from the connection string
-        assertEquals(true, remoteUri.contains("test-ns.servicebus.windows.net"),
+        assertTrue(remoteUri.contains("test-ns.servicebus.windows.net"),
                 "Remote URI should contain the namespace host");
     }
 
