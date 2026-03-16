@@ -82,6 +82,13 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.settings = settings;
         this.password = connectionStringBuilder.getSasKey();
         this.userName = connectionStringBuilder.getSasKeyName();
+        if (this.password == null && this.userName == null) {
+            String sasToken = connectionStringBuilder.getSharedAccessSignatureToken();
+            if (sasToken != null) {
+                this.password = sasToken;
+                this.userName = extractSknFromSasToken(sasToken);
+            }
+        }
         this.host = connectionStringBuilder.getEndpoint().getHost();
         this.initializeWithSas();
     }
@@ -348,7 +355,14 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.checkRequiredProperty(CONNECTION_STRING_PROPERTY, connectionString);
         this.builder = new ConnectionStringBuilder(connectionString);
         this.password = this.builder.getSasKey();
-        this.userName = this.builder.getSasKeyName(); 
+        this.userName = this.builder.getSasKeyName();
+        if (this.password == null && this.userName == null) {
+            String sasToken = this.builder.getSharedAccessSignatureToken();
+            if (sasToken != null) {
+                this.password = sasToken;
+                this.userName = extractSknFromSasToken(sasToken);
+            }
+        }
         this.host = this.builder.getEndpoint().getHost();
         this.initializeWithSas();
     
@@ -443,5 +457,33 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
 		this.factory.setExtension(JmsConnectionExtensions.PASSWORD_OVERRIDE.toString(), (connection, uri) -> {	
 			return this.aadAuthentication.getAadToken();
 	    });
+    }
+
+    /**
+     * Extract the 'skn' (Shared Access Key Name) parameter from a SAS token string.
+     * SAS token format: SharedAccessSignature sr=<resource>&sig=<signature>&se=<expiry>&skn=<keyName>
+     * @param sasToken The full SAS token string
+     * @return The value of the skn parameter, or null if not found
+     */
+    private static String extractSknFromSasToken(String sasToken) {
+        if (sasToken == null || sasToken.isEmpty()) {
+            return null;
+        }
+
+        // The token may start with "SharedAccessSignature " prefix before the key-value pairs
+        String parameterPart = sasToken;
+        int spaceIndex = sasToken.indexOf(' ');
+        if (spaceIndex >= 0) {
+            parameterPart = sasToken.substring(spaceIndex + 1);
+        }
+
+        for (String part : parameterPart.split("&")) {
+            String[] keyValue = part.split("=", 2);
+            if (keyValue.length == 2 && "skn".equalsIgnoreCase(keyValue[0].trim())) {
+                return keyValue[1].trim();
+            }
+        }
+
+        return null;
     }
 }
