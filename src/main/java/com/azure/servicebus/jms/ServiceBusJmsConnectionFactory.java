@@ -38,6 +38,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
     // JNDI property names
     private static final String CONNECTION_STRING_PROPERTY = "connectionString";
     private static final String CLIENT_ID_PROPERTY = "clientId";
+    private static final String PRICING_TIER_PROPERTY = "pricingTier";
     private static final int MAXCUSTOMUSERAGENTLENGTH = 128;
 
     // AAD TOKEN properties
@@ -156,7 +157,9 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
 
         this.factory.setExtension(JmsConnectionExtensions.AMQP_OPEN_PROPERTIES.toString(), (connection, uri) -> {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
+            if (this.settings.getPricingTier() == ServiceBusJmsPricingTier.PREMIUM) {
+                properties.put(ServiceBusJmsConnectionFactorySettings.IsClientProvider, true);
+            }
             
             String servicebusJmsVersion = "";
             Properties applicationProperties = new Properties();
@@ -318,6 +321,9 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         
         String connectionString = this.builder == null ? null : this.builder.toString();
         properties.put(CONNECTION_STRING_PROPERTY, connectionString);
+        if (this.settings != null) {
+            properties.put(PRICING_TIER_PROPERTY, this.settings.getPricingTier().name());
+        }
 
         if (this.factory != null && StringUtil.isNullOrEmpty(this.getClientId())) {
             properties.put(CLIENT_ID_PROPERTY, this.getClientId());
@@ -335,6 +341,7 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         // TODO: support JNDI for the various configurations of ServiceBusJmsConnectionFactorySettings
         String connectionString = null;
         String clientId = null;
+        ServiceBusJmsPricingTier pricingTier = ServiceBusJmsPricingTier.PREMIUM;
         for (Map.Entry<String,String> property : properties.entrySet()) {
             String propertyName = property.getKey();
             if (propertyName != null) {
@@ -345,6 +352,13 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
                 if (propertyName.equalsIgnoreCase(CLIENT_ID_PROPERTY)) {
                     clientId = property.getValue();
                 }
+                if (propertyName.equalsIgnoreCase(PRICING_TIER_PROPERTY)) {
+                    try {
+                        pricingTier = ServiceBusJmsPricingTier.valueOf(property.getValue());
+                    } catch (IllegalArgumentException | NullPointerException e) {
+                        throw new IllegalArgumentException("pricingTier must be STANDARD or PREMIUM.", e);
+                    }
+                }
             }
         }
         
@@ -354,6 +368,10 @@ public class ServiceBusJmsConnectionFactory extends JNDIStorable implements Conn
         this.userName = this.builder.getSasKeyName();
         this.applySasTokenCredentialsIfNeeded(this.builder);
         this.host = this.builder.getEndpoint().getHost();
+        if (this.settings == null) {
+            this.settings = new ServiceBusJmsConnectionFactorySettings();
+        }
+        this.settings.setPricingTier(pricingTier);
         this.initializeWithSas();
     
         // Need to wait until the inner factory is initialized in order to set the clientId
