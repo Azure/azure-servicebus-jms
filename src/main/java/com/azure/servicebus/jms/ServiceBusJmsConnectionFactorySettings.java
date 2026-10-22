@@ -6,6 +6,7 @@ package com.azure.servicebus.jms;
 import java.util.function.Supplier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.netty.handler.proxy.ProxyHandler;
 
@@ -21,6 +22,7 @@ public class ServiceBusJmsConnectionFactorySettings {
     private long connectionIdleTimeoutMS;
     private Supplier<ProxyHandler> proxyHandlerSupplier;
     private boolean traceFrames;
+    private ServiceBusJmsPricingTier pricingTier = ServiceBusJmsPricingTier.PREMIUM;
     private long queueAutoDeleteOnIdleDurationInSeconds;
     private long topicAutoDeleteOnIdleDurationInSeconds;
     private long subscriberAutoDeleteOnIdleDurationInSeconds;
@@ -79,6 +81,26 @@ public class ServiceBusJmsConnectionFactorySettings {
     
     public void setTraceFrames(boolean traceFrames) {
         this.traceFrames = traceFrames;
+    }
+
+    /**
+     * @return the selected JMS provider mode. The default is {@link ServiceBusJmsPricingTier#PREMIUM}.
+     */
+    public ServiceBusJmsPricingTier getPricingTier() {
+        return pricingTier;
+    }
+
+    /**
+     * Selects the JMS provider mode for connections created with these settings.
+     * Configure this before constructing or using the connection factory. Standard mode omits
+     * the full-JMS provider marker; it does not change the namespace tier or enable unsupported
+     * JMS operations. Standard requires pre-created entities and supports only its limited JMS subset.
+     *
+     * @param pricingTier the namespace's pricing tier.
+     * @throws NullPointerException if pricingTier is null.
+     */
+    public void setPricingTier(ServiceBusJmsPricingTier pricingTier) {
+        this.pricingTier = Objects.requireNonNull(pricingTier, "pricingTier cannot be null.");
     }
 
     /**
